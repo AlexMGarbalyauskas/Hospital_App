@@ -1,0 +1,32 @@
+<div id="<%= dom_id patient %>" class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0">Patient Details</h5>
+    </div>
+
+    <div class="card-body">
+      <p class="mb-2">
+        <strong>Name:</strong>
+        <span class="ms-2"><%= patient.name %></span>
+      </p>
+
+      <p class="mb-2">
+        <strong>Age:</strong>
+        <span class="ms-2"><%= patient.age %></span>
+      </p>
+
+      <p class="mb-2">
+        <strong>Diagnosis:</strong>
+        <span class="ms-2"><%= patient.diagnosis %></span>
+      </p>
+
+      <p class="mb-0">
+         <strong>Admitted on:</strong>
+         <span class="ms-2">
+         <%= patient.admitted_on.present? ? patient.admitted_on.strftime("%B %d, %Y") : "Not recorded" %>
+        
+        </span>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<% content_for :title, "Patients" %>
+
+<div class="container mt-4">
+  <div class="d-flex flex-wrap align-items-center gap-2">
+    <%= link_to "➕ New Patient", new_patient_path, class: "btn btn-success btn-sm px-4" %>
+
+    <%= search_form_for @q, url: patients_path, method: :get, class: "d-flex gap-2 align-items-center" do |f| %>
+      <%= f.submit "Search", class: "btn btn-outline-primary btn-sm" %>
+      <%= f.search_field :name_or_diagnosis_cont, placeholder: "Search by name or diagnosis", class: "form-control form-control-sm", style: "min-width: 300px; max-width: 500px;" %>
+    <% end %>
+  </div>
+</div>
+
+
+
+
+<div id="patients">
+  <% @patients.each do |patient| %>
+    <%= render patient %>
+    <p>
+      <%= link_to "Show this patient", patient %>
+    </p>
+  <% end %>
+</div>
+

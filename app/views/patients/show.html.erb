@@ -1,0 +1,15 @@
+<% content_for :title, "Patient Details" %>
+
+
+
+  <%= render @patient %>
+
+  <div class="container mt-4">
+  <div class="d-flex justify-content-center gap-3 flex-wrap">
+    <%= link_to "← Back to Patients", patients_path, class: "btn btn-outline-secondary btn-sm" %>
+    <%= link_to "Edit", edit_patient_path(@patient), class: "btn btn-outline-primary btn-sm" %>
+    <%= button_to "Delete", @patient, method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-outline-danger btn-sm" %>
+  </div>
+</div>
+
+</div>
