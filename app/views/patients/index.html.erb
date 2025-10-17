@@ -1,0 +1,78 @@
+<% content_for :title, "Patients" %>
+
+<div class="container mt-4">
+  <div class="d-flex flex-wrap align-items-center gap-3">
+    <%= link_to "➕ New Patient", select_patient_category_path, class: "btn btn-success btn-sm px-4" %>
+
+    <!-- Stimulus Dropdown Filter -->
+    <div data-controller="category-filter" class="me-3">
+  <%= form_with url: patients_path, method: :get, local: true, class: "row g-2 align-items-center" do %>
+    <div class="col-auto">
+      <%= select_tag :category_type,
+          options_for_select(["Age Group", "Critical Status", "Treatment Time"]),
+          class: "form-select form-select-sm",
+          data: {
+            "action" => "change->category-filter#showOptions",
+            "category-filter-target" => "type"
+          } %>
+    </div>
+
+    <div class="col-auto" data-category-filter-target="valueWrapper">
+      <%= select_tag :category_value, "", class: "form-select form-select-sm", data: { "category-filter-target" => "value" } %>
+    </div>
+
+    <div class="col-auto">
+      <%= submit_tag "Apply", class: "btn btn-outline-primary btn-sm" %>
+      <%= link_to "Clear", patients_path, class: "btn btn-outline-secondary btn-sm" %>
+    </div>
+  <% end %>
+</div>
+
+   
+</div>
+
+<% if params[:category_type].present? && params[:category_value].present? %>
+  <div class="container mt-3">
+    <div class="alert alert-info d-flex justify-content-between align-items-center">
+      <div>
+        Showing patients with
+        <strong><%= params[:category_type] %></strong> =
+        <strong><%= params[:category_value] %></strong>
+      </div>
+      <%= link_to "Clear Filter", patients_path, class: "btn btn-sm btn-outline-secondary" %>
+    </div>
+  </div>
+<% end %>
+
+<div id="patients" class="container mt-4">
+  <% if @patients.any? %>
+    <% @patients.each do |patient| %>
+      <div id="<%= dom_id patient %>" class="mb-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Patient Details</h5>
+          </div>
+
+          <div class="card-body">
+            <p><strong>Name:</strong> <%= patient.name.presence || "Not recorded" %></p>
+            <p><strong>Age:</strong> <%= patient.age.presence || "Not recorded" %></p>
+            <p><strong>Diagnosis:</strong> <%= patient.diagnosis.presence || "Not recorded" %></p>
+            <p><strong>Admitted on:</strong>
+              <%= patient.admitted_on.present? ? patient.admitted_on.strftime("%B %d, %Y") : "Not recorded" %>
+            </p>
+
+            <hr>
+
+            <p><strong>Age Group:</strong> <%= patient.category.presence || "Not set" %></p>
+            <p><strong>Critical Status:</strong> <%= patient.critical_status.presence || "Not set" %></p>
+            <p><strong>Treatment Time:</strong> <%= patient.treatment_time.presence || "Not set" %></p>
+
+            <%= link_to "Show this patient", patient_path(patient), class: "btn btn-outline-primary btn-sm mt-3" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <p class="text-muted">No patients found.</p>
+  <% end %>
+</div>

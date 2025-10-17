@@ -1,0 +1,40 @@
+<% content_for :title, "Select Patient Category" %>
+
+<div class="container mt-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Select Patient Category</h4>
+    </div>
+
+    <div class="card-body">
+      <%= form_with url: new_patient_path, method: :get, local: true do %>
+        <div class="mb-3">
+          <%= label_tag :category, "Age Group", class: "form-label" %>
+          <%= select_tag :category,
+              options_for_select(["Child", "Adult", "Senior"], selected: "Child"),
+              class: "form-select" %>
+        </div>
+
+        <div class="mb-3">
+          <%= label_tag :critical_status, "Critical Status", class: "form-label" %>
+          <%= select_tag :critical_status,
+              options_for_select(["Critical", "Non Critical", "Mild"], selected: "Critical"),
+              class: "form-select" %>
+        </div>
+
+        <div class="mb-3">
+          <%= label_tag :treatment_time, "Treatment Time", class: "form-label" %>
+          <%= select_tag :treatment_time,
+              options_for_select(["Immediate", "Scheduled", "Routine"], selected: "Immediate"),
+              class: "form-select" %>
+        </div>
+
+        <%= submit_tag "Continue to Patient Details", class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-4 text-center">
+    <%= link_to "← Back to Patients", patients_path, class: "btn btn-outline-secondary btn-sm" %>
+  </div>
+</div>

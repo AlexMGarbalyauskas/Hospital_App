@@ -1,0 +1,50 @@
+<div id="<%= dom_id patient %>" class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0">Patient Details</h5>
+    </div>
+
+    <div class="card-body">
+      <p class="mb-2">
+        <strong>Name:</strong>
+        <span class="ms-2"><%= patient.name.presence || "Not recorded" %></span>
+      </p>
+
+      <p class="mb-2">
+        <strong>Age:</strong>
+        <span class="ms-2"><%= patient.age.presence || "Not recorded" %></span>
+      </p>
+
+      <p class="mb-2">
+        <strong>Diagnosis:</strong>
+        <span class="ms-2"><%= patient.diagnosis.presence || "Not recorded" %></span>
+      </p>
+
+      <p class="mb-2">
+        <strong>Admitted on:</strong>
+        <span class="ms-2">
+          <%= patient.admitted_on.present? ? patient.admitted_on.strftime("%B %d, %Y") : "Not recorded" %>
+        </span>
+      </p>
+
+      <hr>
+
+      <p class="mb-2">
+        <strong>Age Group:</strong>
+        <span class="ms-2"><%= patient.category.presence || "Not set" %></span>
+      </p>
+
+      <p class="mb-2">
+        <strong>Critical Status:</strong>
+        <span class="ms-2"><%= patient.critical_status.presence || "Not set" %></span>
+      </p>
+
+      <p class="mb-2">
+        <strong>Treatment Time:</strong>
+        <span class="ms-2"><%= patient.treatment_time.presence || "Not set" %></span>
+      </p>
+
+      <%= link_to "Show this patient", patient_path(patient), class: "btn btn-outline-primary btn-sm mt-3" %>
+    </div>
+  </div>
+</div>

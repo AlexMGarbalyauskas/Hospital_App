@@ -1,0 +1,18 @@
+<% content_for :title, "Editing Patient" %>
+
+<div class="container mt-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-warning text-dark">
+      <h4 class="mb-0">Editing Patient</h4>
+    </div>
+
+    <div class="card-body">
+      <%= render "form", patient: @patient %>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+    <%= link_to "← Back to Patients", patients_path, class: "btn btn-outline-secondary btn-sm" %>
+    <%= link_to "View Patient", @patient, class: "btn btn-outline-primary btn-sm" %>
+  </div>
+</div>
