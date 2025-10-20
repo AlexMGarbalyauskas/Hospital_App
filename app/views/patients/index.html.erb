@@ -1,36 +1,52 @@
+<%# Patients index page%>
+
+<%# Title for page %>
 <% content_for :title, "Patients" %>
 
+<!-- Main container for new patient --> 
 <div class="container mt-4">
-  <div class="d-flex flex-wrap align-items-center gap-3">
+
+  <!-- Bootstap flexbox for new patient button --> 
+  <div class="d-flex flex-wrap align-items-center gap-3 w-100">
+
+    <!-- New Patient button link styled with bootstrap  --> 
+    <!-- Links to select_patient_category_path route -->
     <%= link_to "➕ New Patient", select_patient_category_path, class: "btn btn-success btn-sm px-4" %>
 
-    <!-- Stimulus Dropdown Filter -->
-    <div data-controller="category-filter" class="me-3">
-  <%= form_with url: patients_path, method: :get, local: true, class: "row g-2 align-items-center" do %>
-    <div class="col-auto">
-      <%= select_tag :category_type,
-          options_for_select(["Age Group", "Critical Status", "Treatment Time"]),
-          class: "form-select form-select-sm",
-          data: {
-            "action" => "change->category-filter#showOptions",
-            "category-filter-target" => "type"
-          } %>
-    </div>
+    <!-- Combined GET form: Ransack search + category filter -->
+    <div class="flex-grow-1">
 
-    <div class="col-auto" data-category-filter-target="valueWrapper">
-      <%= select_tag :category_value, "", class: "form-select form-select-sm", data: { "category-filter-target" => "value" } %>
-    </div>
+      <!-- form_with creates form that submits to patients_path with GET method --> 
+      <%= form_with url: patients_path, method: :get, local: true, class: "d-flex gap-2 align-items-center", id: "filter-form" do %>
 
-    <div class="col-auto">
-      <%= submit_tag "Apply", class: "btn btn-outline-primary btn-sm" %>
-      <%= link_to "Clear", patients_path, class: "btn btn-outline-secondary btn-sm" %>
+        <!-- Search field -->
+        <%= text_field_tag "q[name_or_diagnosis_cont]",
+              params.dig(:q, :name_or_diagnosis_cont),
+              placeholder: "Search by name or diagnosis",
+              class: "form-control form-control-sm",
+              style: "min-width: 300px; max-width: 500px;" %>
+
+        <%= submit_tag "Search", class: "btn btn-outline-primary btn-sm" %>
+
+        <!-- First dropdown: filter type -->
+        <%= select_tag :category_type,
+              options_for_select(["", "Age Group", "Critical Status", "Treatment Time"], params[:category_type]),
+              class: "form-select form-select-sm",
+              id: "category-type" %>
+
+        <!-- Second dropdown: filter value -->
+        <%= select_tag :category_value,
+              "", # will be populated by JS
+              class: "form-select form-select-sm d-none",
+              id: "category-value" %>
+
+        <%= link_to "Clear", patients_path, class: "btn btn-outline-secondary btn-sm" %>
+      <% end %>
     </div>
-  <% end %>
+  </div>
 </div>
 
-   
-</div>
-
+<%# Alert box showing active filter if present %>
 <% if params[:category_type].present? && params[:category_value].present? %>
   <div class="container mt-3">
     <div class="alert alert-info d-flex justify-content-between align-items-center">
@@ -44,35 +60,76 @@
   </div>
 <% end %>
 
+<!-- Patient cards grid -->
 <div id="patients" class="container mt-4">
   <% if @patients.any? %>
-    <% @patients.each do |patient| %>
-      <div id="<%= dom_id patient %>" class="mb-4">
-        <div class="card shadow-sm">
-          <div class="card-header bg-info text-white">
-            <h5 class="mb-0">Patient Details</h5>
-          </div>
+    <!-- Bootstrap row to hold 3 cards per row, left-aligned -->
+    <div class="row">
+      <% @patients.each do |patient| %>
+        <!-- Each patient card takes up 4 columns on medium+ screens -->
+        <div id="<%= dom_id patient %>" class="col-md-4 mb-4">
+          <div class="card shadow-sm" style="max-width: 100%;">
+            <div class="card-header bg-info text-white">
+              <h5 class="mb-0">Patient Details</h5>
+            </div>
 
-          <div class="card-body">
-            <p><strong>Name:</strong> <%= patient.name.presence || "Not recorded" %></p>
-            <p><strong>Age:</strong> <%= patient.age.presence || "Not recorded" %></p>
-            <p><strong>Diagnosis:</strong> <%= patient.diagnosis.presence || "Not recorded" %></p>
-            <p><strong>Admitted on:</strong>
-              <%= patient.admitted_on.present? ? patient.admitted_on.strftime("%B %d, %Y") : "Not recorded" %>
-            </p>
+            <div class="card-body">
+              <p><strong>Name:</strong> <%= patient.name.presence || "Not recorded" %></p>
+              <p><strong>Age:</strong> <%= patient.age.presence || "Not recorded" %></p>
+              <p><strong>Diagnosis:</strong> <%= patient.diagnosis.presence || "Not recorded" %></p>
+              <p><strong>Admitted on:</strong>
+                <%= patient.admitted_on.present? ? patient.admitted_on.strftime("%B %d, %Y") : "Not recorded" %>
+              </p>
 
-            <hr>
+              <hr>
 
-            <p><strong>Age Group:</strong> <%= patient.category.presence || "Not set" %></p>
-            <p><strong>Critical Status:</strong> <%= patient.critical_status.presence || "Not set" %></p>
-            <p><strong>Treatment Time:</strong> <%= patient.treatment_time.presence || "Not set" %></p>
+              <p><strong>Age Group:</strong> <%= patient.category.presence || "Not set" %></p>
+              <p><strong>Critical Status:</strong> <%= patient.critical_status.presence || "Not set" %></p>
+              <p><strong>Treatment Time:</strong> <%= patient.treatment_time.presence || "Not set" %></p>
 
-            <%= link_to "Show this patient", patient_path(patient), class: "btn btn-outline-primary btn-sm mt-3" %>
+              <%= link_to "Show this patient", patient_path(patient), class: "btn btn-outline-primary btn-sm mt-3" %>
+            </div>
           </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   <% else %>
-    <p class="text-muted">No patients found.</p>
+    <!-- Message if no patients match the filter -->
+    <p class="text-muted text-center">No patients found.</p>
   <% end %>
 </div>
+
+<!-- Inline JavaScript for dynamic category filtering -->
+<%= javascript_tag do %>
+  document.addEventListener("DOMContentLoaded", function () {
+    const typeSelect = document.getElementById("category-type")
+    const valueSelect = document.getElementById("category-value")
+    const form = document.getElementById("filter-form")
+
+    const optionsMap = {
+      "Age Group": ["Child", "Adult", "Senior"],
+      "Critical Status": ["Critical", "Non Critical", "Mild"],
+      "Treatment Time": ["Immediate", "Scheduled", "Routine"]
+    }
+
+    typeSelect.addEventListener("change", function () {
+      const selectedType = typeSelect.value
+      const options = optionsMap[selectedType] || []
+
+      if (options.length > 0) {
+        valueSelect.innerHTML = `<option value="">Select ${selectedType}</option>` +
+          options.map(opt => `<option value="${opt}">${opt}</option>`).join("")
+        valueSelect.classList.remove("d-none")
+      } else {
+        valueSelect.innerHTML = ""
+        valueSelect.classList.add("d-none")
+      }
+    })
+
+    valueSelect.addEventListener("change", function () {
+      if (valueSelect.value !== "") {
+        form.submit()
+      }
+    })
+  })
+<% end %>

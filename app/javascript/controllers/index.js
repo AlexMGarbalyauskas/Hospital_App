@@ -5,6 +5,3 @@ import { application } from "controllers/application"
 import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
 eagerLoadControllersFrom("controllers", application)
 
-
-import CategoryToggleController from "./category_toggle_controller"
-application.register("category-toggle", CategoryToggleController)
