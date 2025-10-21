@@ -1,16 +1,31 @@
-<%# Main index page when app starts linking sign up and sign in pages %>
+<div class="container-fluid ">
+  <div class="row align-items-center justify-content-center">
 
-<div class="container py-5">
-  <h1 class="mb-5 text-center">Welcome to Hospital App</h1>
+    <!-- LEFT SIDE: Intro / Buttons -->
+    <div class="col-md-6 px-5 mb-5 mb-md-0 border-end border-2 border-light">
+      <h1 class="mb-4 fw-bold text-primary text-center text-md-start">Welcome to Hospital App</h1>
 
-  <div class="text-center">
-    <% if session[:user_id] %>
-      <%= link_to "Manage Patients", patients_path, class: "btn btn-primary" %>
-    <% else %>
-      <p class="text-danger">Please log in to create and access patients.</p>
-      <%= link_to "Login", sign_in_path, class: "btn btn-outline-primary me-2" %>
-      <%= link_to "Sign Up", sign_up_path, class: "btn btn-outline-secondary" %>
-    <% end %>
+      <p class="fs-5 text-muted text-center text-md-start mb-3">
+        Manage patient records with ease and efficiency.
+      </p>
+      <p class="fs-5 text-primary text-center text-md-start mb-4">
+        Create, update, and review detailed medical logs securely.
+      </p>
+
+      <div class="text-center text-md-start">
+        <% if session[:user_id] %>
+          <%= link_to "Manage Patients", patients_path, class: "btn btn-primary px-4 me-2 mb-2" %>
+        <% else %>
+          <p class="text-danger mb-3">Please log in to create and access patient data.</p>
+          <%= link_to "Login", sign_in_path, class: "btn btn-outline-primary px-4 me-2 mb-2" %>
+          <%= link_to "Sign Up", sign_up_path, class: "btn btn-outline-secondary px-4 mb-2" %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: Carousel -->
+    <div class="col-md-6 px-4">
+      <%= render "shared/sectiontwo" %>
+    </div>
   </div>
-  
 </div>

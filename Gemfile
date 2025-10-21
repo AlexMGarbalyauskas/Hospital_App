@@ -19,6 +19,10 @@ gem "jbuilder"
 
 gem "ransack"
 
+# For Active Storage variants
+gem "image_processing", "~> 1.2"
+gem "mini_magick" # optional, but recommended
+
 
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]

@@ -1,0 +1,25 @@
+<div id="<%= dom_id(patient, :photo_wrapper) %>">
+  <% if patient.photo.attached? %>
+    <%= image_tag patient.photo.variant(resize_to_limit: [100, 100]),
+        class: "rounded-circle border mb-2",
+        alt: "Current photo",
+        id: dom_id(patient, :photo) %>
+
+    <button type="button"
+            data-controller="remove-photo"
+            data-remove-photo-url-value="<%= remove_photo_patient_path(patient) %>"
+            data-remove-photo-target-id-value="<%= dom_id(patient, :photo) %>"
+            data-remove-photo-wrapper-id-value="<%= dom_id(patient, :photo_wrapper) %>"
+            data-action="click->remove-photo#remove"
+            class="btn btn-sm btn-outline-danger mb-3">
+      Remove Image
+    </button>
+  <% else %>
+    <%= image_tag "user.png",
+        class: "rounded-circle border mb-2",
+        width: 100,
+        height: 100,
+        alt: "Default photo",
+        id: dom_id(patient, :photo) %>
+  <% end %>
+</div>

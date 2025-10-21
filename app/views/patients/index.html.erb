@@ -1,33 +1,18 @@
 <%# Patients index page%>
 
-
-
-
 <%# 1%>
 <%# Title for page %>
 <% content_for :title, "Patients" %>
 
-
-
-
-
-
-
 <!-- Main container for new patient --> 
 <div class="container mt-4">
-
-
 
   <!-- Bootstap flexbox for new patient button --> 
   <div class="d-flex flex-wrap align-items-center gap-3 w-100">
 
-
     <!-- New Patient button link styled with bootstrap  --> 
     <!-- Links to select_patient_category_path route -->
     <%= link_to "New Patient", select_patient_category_path, class: "btn btn-success btn-sm px-4" %>
-
-
-
 
     <!-- Combined GET form: Ransack search + category filter -->
     <div class="flex-grow-1">
@@ -53,12 +38,6 @@
         id: "category-type",
         style: "color: #6c757d;" %>
 
-
-  
-
-       
-
-
         <!-- Second dropdown: filter value -->
         <%= select_tag :category_value,
               "", # will be populated by JS
@@ -69,22 +48,9 @@
       <% end %> <!-- form end --> 
     </div> <!--form div end -->
 
-
-
   </div> <!-- End of flexbox div --> 
 
-
-
-
 </div> <!-- End of main container --> 
-
-
-
-
-
-
-
-
 
 <%# Alert box showing active filter if present %>
 <% if params[:category_type].present? && params[:category_value].present? %>
@@ -100,11 +66,6 @@
   </div>
 <% end %>
 
-
-
-
-
-
 <!-- Patient cards grid -->
 <div id="patients" class="container mt-4">
   <% if @patients.any? %>
@@ -114,11 +75,20 @@
         <!-- Each patient card takes up 4 columns on medium+ screens -->
         <div id="<%= dom_id patient %>" class="col-md-4 mb-4">
           <div class="card shadow-sm" style="max-width: 100%;">
-            <div class="card-header bg-info text-white">
+            <div class="card-header bg-info text-white text-center">
               <h5 class="mb-0">Patient Details</h5>
             </div>
 
-            <div class="card-body">
+            <div class="card-body text-start">
+              <!-- Profile image above name -->
+              <div class="mb-3 text-center">
+                <% if patient.photo.attached? %>
+                  <%= image_tag patient.photo.variant(resize_to_limit: [80, 80]), class: "rounded-circle border", alt: "Patient photo" %>
+                <% else %>
+                  <%= image_tag "user.png", class: "rounded-circle border", width: 80, height: 80, alt: "Default patient photo" %>
+                <% end %>
+              </div>
+
               <p><strong>Name:</strong> <%= patient.name.presence || "Not recorded" %></p>
               <p><strong>Age:</strong> <%= patient.age.presence || "Not recorded" %></p>
               <p><strong>Diagnosis:</strong> <%= patient.diagnosis.presence || "Not recorded" %></p>
@@ -143,12 +113,6 @@
     <p class="text-muted text-center">No patients found.</p>
   <% end %>
 </div>
-
-
-
-
-
-
 
 <!-- Inline JavaScript for dynamic category filtering -->
 <%= javascript_tag do %>

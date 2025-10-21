@@ -1,37 +1,41 @@
-<h1> Sign up </h1> 
+<%# Sign Up Section %>
+<div class="container d-flex justify-content-center pt-5">
+  <div class="card shadow-sm w-100" style="max-width: 400px;">
+    <div class="card-header bg-secondary text-white text-center">
+      <h4 class="mb-0">Sign Up</h4>
+    </div>
 
-<%= form_with model: @user, url: sign_up_path do |form| %>
+    <div class="card-body">
+      <%= form_with model: @user, url: sign_up_path do |form| %>
 
+        <% if @user.errors.any? %>
+          <div class="alert alert-danger">
+            <% @user.errors.full_messages.each do |message| %>
+              <div><%= message %></div>
+            <% end %>
+          </div>
+        <% end %>
 
+        <div class="mb-3">
+          <%= form.label :email %>
+          <%= form.text_field :email, class: "form-control", placeholder: "steve@apple.com" %>
+        </div>
 
-<% if @user.errors.any?%>
-    <div class="alert alert-danger"> 
-        <% @user.errors.full_messages.each do |message| %>
-        <div> <%= message %> </div> 
-    <% end %>
-</div> 
-<%end %>
+        <div class="mb-3">
+          <%= form.label :password %>
+          <%= form.password_field :password, class: "form-control", placeholder: "password" %>
+        </div>
 
+        <div class="mb-3">
+          <%= form.label :password_confirmation %>
+          <%= form.password_field :password_confirmation, class: "form-control", placeholder: "password" %>
+        </div>
 
-<div class="mb-3"> 
-<%= form.label :email%>
-<%= form.text_field :email, class: "form-control", placeholder: "steve@apple.com" %>
-</div> 
+        <div class="mb-3 text-center">
+          <%= form.submit "Sign Up", class: "btn btn-secondary px-4" %>
+        </div>
 
-<div class="mb-3"> 
-<%= form.label  :password%>
-<%= form.password_field :password, class: "form-control", placeholder: "password" %>
-</div> 
-
-<div class="mb-3"> 
-<%= form.label :password_confirmation%>
-<%= form.password_field :password_confirmation, class: "form-control", placeholder: "password" %>
-</div> 
-
-<div class="mb-3"> 
-<%= form.submit "Sign Up", class: "btn btn-primary" %>
-</div> 
-
-
-
-<% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

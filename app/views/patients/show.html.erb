@@ -1,15 +1,48 @@
 <% content_for :title, "Patient Details" %>
 
+<div class="container pt-5 d-flex justify-content-center">
+  <div class="card shadow-sm w-100" style="max-width: 600px;">
+    
+    <!-- Card header with split layout -->
+    <div class="card-header bg-info text-white p-0">
+      <div class="d-flex align-items-stretch">
 
+        <!-- Left: profile image with white background and right border -->
+        <div style="background-color: ; padding: 1rem; border-right: 2px ">
+          <% if @patient.photo.attached? %>
+            <%= image_tag @patient.photo.variant(resize_to_limit: [80, 80]), class: "rounded-circle border", alt: "Patient photo" %>
+          <% else %>
+            <%= image_tag "user.png", class: "rounded-circle border", width: 80, height: 80, alt: "Default patient photo" %>
+          <% end %>
+        </div>
 
-  <%= render @patient %>
+        <!-- Right: title section with blue background -->
+        <div class="flex-grow-1 d-flex align-items-center ps-3">
+          <h4 class="mb-0">Patient Details</h4>
+        </div>
 
-  <div class="container mt-4">
-  <div class="d-flex justify-content-center gap-3 flex-wrap">
-    <%= link_to "← Back to Patients", patients_path, class: "btn btn-outline-secondary btn-sm" %>
-    <%= link_to "Edit", edit_patient_path(@patient), class: "btn btn-outline-primary btn-sm" %>
-    <%= button_to "Delete", @patient, method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-outline-danger btn-sm" %>
+      </div>
+    </div>
+
+    <!-- Card body -->
+    <div class="card-body">
+      <p><strong>Name:</strong> <%= @patient.name.presence || "Not recorded" %></p>
+      <p><strong>Age:</strong> <%= @patient.age.presence || "Not recorded" %></p>
+      <p><strong>Diagnosis:</strong> <%= @patient.diagnosis.presence || "Not recorded" %></p>
+      <p><strong>Admitted on:</strong>
+        <%= @patient.admitted_on.present? ? @patient.admitted_on.strftime("%B %d, %Y") : "Not recorded" %>
+      </p>
+      <hr>
+      <p><strong>Age Group:</strong> <%= @patient.category.presence || "Not set" %></p>
+      <p><strong>Critical Status:</strong> <%= @patient.critical_status.presence || "Not set" %></p>
+      <p><strong>Treatment Time:</strong> <%= @patient.treatment_time.presence || "Not set" %></p>
+    </div>
   </div>
 </div>
 
+<!-- Action buttons -->
+<div class="container mt-4 d-flex justify-content-center gap-3 flex-wrap">
+  <%= link_to "← Back to Patients", patients_path, class: "btn btn-outline-secondary btn-sm" %>
+  <%= link_to "Edit", edit_patient_path(@patient), class: "btn btn-outline-primary btn-sm" %>
+  <%= button_to "Delete", @patient, method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-outline-danger btn-sm" %>
 </div>

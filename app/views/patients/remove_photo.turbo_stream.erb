@@ -1,0 +1,9 @@
+<%= turbo_stream.replace dom_id(@patient, :photo_wrapper) do %>
+  <div id="<%= dom_id(@patient, :photo_wrapper) %>">
+    <img src="/images/user.png"
+         class="rounded-circle border mb-2"
+         width="100" height="100"
+         alt="Default photo"
+         id="<%= dom_id(@patient, :photo) %>">
+  </div>
+<% end %>

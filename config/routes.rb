@@ -3,9 +3,11 @@
 
 #Auto generates RESTful routes for patients resource 
 Rails.application.routes.draw do
-  
-  #Patients resource with all CRUD actions 
-  resources :patients
+   resources :patients do
+    member do
+      delete :remove_photo
+    end
+  end
 
   #Sets homepage to main controller index action
   get "about", to: "about#index"
