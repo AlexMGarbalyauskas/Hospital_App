@@ -1,14 +1,16 @@
-<%# Main index page when app starts linking sign up and sign in pages%>
+<%# Main index page when app starts linking sign up and sign in pages %>
 
+<div class="container py-5">
+  <h1 class="mb-5 text-center">Welcome to Hospital App</h1>
 
-<div class="container mt-5 text-center">
-  <h1 class="mb-3">Welcome to Hospital App</h1>
-
-  <% if session[:user_id] %>
-    <%= link_to "Manage Patients", patients_path, class: "btn btn-primary" %>
-  <% else %>
-    <p class="text-danger">Please log in to create and access patients.</p>
-    <%= link_to "Login", sign_in_path, class: "btn btn-outline-primary me-2" %>
-    <%= link_to "Sign Up", sign_up_path, class: "btn btn-outline-secondary" %>
-  <% end %>
+  <div class="text-center">
+    <% if session[:user_id] %>
+      <%= link_to "Manage Patients", patients_path, class: "btn btn-primary" %>
+    <% else %>
+      <p class="text-danger">Please log in to create and access patients.</p>
+      <%= link_to "Login", sign_in_path, class: "btn btn-outline-primary me-2" %>
+      <%= link_to "Sign Up", sign_up_path, class: "btn btn-outline-secondary" %>
+    <% end %>
+  </div>
+  
 </div>

@@ -23,13 +23,16 @@
     <%= f.date_field :admitted_on, class: "form-control" %>
   </div>
 
-  <div class="alert alert-info">
+  <div class="alert alert-info text-center">
     <strong>Selected:</strong>
     <%= patient.category.presence || "N/A" %> •
     <%= patient.critical_status.presence || "N/A" %> •
     <%= patient.treatment_time.presence || "N/A" %>
   </div>
 
-  <%= f.submit (patient.new_record? ? "Create Patient" : "Update Patient"),
-               class: "btn btn-success" %>
+  <!-- Centered Create/Update button -->
+  <div class="text-center mt-4">
+    <%= f.submit (patient.new_record? ? "Create Patient" : "Update Patient"),
+                 class: "btn btn-success px-5" %>
+  </div>
 <% end %>
