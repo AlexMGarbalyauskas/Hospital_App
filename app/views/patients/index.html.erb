@@ -1,25 +1,14 @@
-<%# Patients index page%>
-
-<%# 1%>
-<%# Title for page %>
+<%# Patients index page %>
 <% content_for :title, "Patients" %>
 
-<!-- Main container for new patient --> 
 <div class="container mt-4">
 
-  <!-- Bootstap flexbox for new patient button --> 
-  <div class="d-flex flex-wrap align-items-center gap-3 w-100">
-
-    <!-- New Patient button link styled with bootstrap  --> 
-    <!-- Links to select_patient_category_path route -->
+  <!-- Top bar: New Patient + Search + Filters -->
+  <div class="d-flex flex-wrap align-items-center gap-3 w-100 mb-3">
     <%= link_to "New Patient", select_patient_category_path, class: "btn btn-success btn-sm px-4" %>
 
-    <!-- Combined GET form: Ransack search + category filter -->
     <div class="flex-grow-1">
-      <!-- form_with creates form that submits to patients_path with GET method --> 
       <%= form_with url: patients_path, method: :get, local: true, class: "d-flex gap-2 align-items-center", id: "filter-form" do %>
-
-        <!-- Search field -->
         <%= text_field_tag "q[name_or_diagnosis_cont]",
               params.dig(:q, :name_or_diagnosis_cont),
               placeholder: "Search by name or diagnosis",
@@ -28,33 +17,21 @@
 
         <%= submit_tag "Search", class: "btn btn-outline-primary btn-sm" %>
 
-        <!-- First dropdown: filter type -->
         <%= select_tag :category_type,
-        options_for_select(
-        [["Search by category", ""], "Age Group", "Critical Status", "Treatment Time"],
-        params[:category_type]
-        ),
-        class: "form-select form-select-sm",
-        id: "category-type",
-        style: "color: #6c757d;" %>
+          options_for_select([["Search by category", ""], "Age Group", "Critical Status", "Treatment Time"], params[:category_type]),
+          class: "form-select form-select-sm",
+          id: "category-type",
+          style: "color: #6c757d;" %>
 
-        <!-- Second dropdown: filter value -->
         <%= select_tag :category_value,
-              "", # will be populated by JS
-              class: "form-select form-select-sm d-none",
-              id: "category-value" %>
+              "", class: "form-select form-select-sm d-none", id: "category-value" %>
 
         <%= link_to "Clear", patients_path, class: "btn btn-outline-secondary btn-sm" %>
-      <% end %> <!-- form end --> 
-    </div> <!--form div end -->
+      <% end %>
+    </div>
+  </div>
 
-  </div> <!-- End of flexbox div --> 
-
-</div> <!-- End of main container --> 
-
-<%# Alert box showing active filter if present %>
-<% if params[:category_type].present? && params[:category_value].present? %>
-  <div class="container mt-3">
+  <% if params[:category_type].present? && params[:category_value].present? %>
     <div class="alert alert-info d-flex justify-content-between align-items-center">
       <div>
         Showing patients with
@@ -63,29 +40,48 @@
       </div>
       <%= link_to "Clear Filter", patients_path, class: "btn btn-sm btn-outline-secondary" %>
     </div>
-  </div>
-<% end %>
+  <% end %>
 
-<!-- Patient cards grid -->
-<div id="patients" class="container mt-4">
-  <% if @patients.any? %>
-    <!-- Bootstrap row to hold 3 cards per row, left-aligned -->
-    <div class="row">
+  <!-- Patients cards -->
+  <div id="patients" class="row mt-3">
+    <% if @patients.any? %>
       <% @patients.each do |patient| %>
-        <!-- Each patient card takes up 4 columns on medium+ screens -->
-        <div id="<%= dom_id patient %>" class="col-md-4 mb-4">
-          <div class="card shadow-sm" style="max-width: 100%;">
-            <div class="card-header bg-info text-white text-center">
-              <h5 class="mb-0">Patient Details</h5>
+
+        <%# Card color based on treatment status %>
+        <% card_class = case patient.treatment_status
+             when "treated" then "bg-success text-white"
+             when "dead" then "bg-dark text-white"
+             else ""
+           end %>
+
+        <%# Badge class for Critical Status %>
+        <% critical_badge = case patient.critical_status
+             when "Critical" then "bg-danger text-white"
+             when "Non Critical" then "bg-orange text-white"
+             when "Mild" then "bg-warning text-dark"
+             else "bg-secondary text-white"
+           end %>
+
+        <div id="patient-<%= patient.id %>" class="col-md-4 mb-4">
+          <div class="card shadow-sm <%= card_class %>" data-patient-id="<%= patient.id %>">
+            <div class="card-header <%= patient.treatment_status.in?(["treated","dead"]) ? "" : "bg-info" %> text-white text-center" id="header-<%= patient.id %>">
+              <h5 class="mb-0">
+                <% if patient.treatment_status == "treated" %>
+                  Treated
+                <% elsif patient.treatment_status == "dead" %>
+                  Dead
+                <% else %>
+                  Patient Details
+                <% end %>
+              </h5>
             </div>
 
-            <div class="card-body text-start">
-              <!-- Profile image above name -->
+            <div class="card-body text-start" id="body-<%= patient.id %>">
               <div class="mb-3 text-center">
                 <% if patient.photo.attached? %>
                   <%= image_tag patient.photo.variant(resize_to_limit: [80, 80]), class: "rounded-circle border", alt: "Patient photo" %>
                 <% else %>
-                  <%= image_tag "user.png", class: "rounded-circle border", width: 80, height: 80, alt: "Default patient photo" %>
+                  <%= image_tag "user.png", class: "rounded-circle border", width: 80, height: 80, alt: "Default photo" %>
                 <% end %>
               </div>
 
@@ -95,56 +91,129 @@
               <p><strong>Admitted on:</strong>
                 <%= patient.admitted_on.present? ? patient.admitted_on.strftime("%B %d, %Y") : "Not recorded" %>
               </p>
-
               <hr>
-
               <p><strong>Age Group:</strong> <%= patient.category.presence || "Not set" %></p>
-              <p><strong>Critical Status:</strong> <%= patient.critical_status.presence || "Not set" %></p>
+              <p>
+                <strong>Critical Status:</strong>
+                <span class="badge <%= critical_badge %> px-2 py-1"><%= patient.critical_status.presence || "Not set" %></span>
+              </p>
               <p><strong>Treatment Time:</strong> <%= patient.treatment_time.presence || "Not set" %></p>
 
-              <%= link_to "Show this patient", patient_path(patient), class: "btn btn-outline-primary btn-sm mt-3" %>
+              <!-- Buttons: Show + Treatment Status -->
+              <div class="d-flex justify-content-center align-items-center gap-2 mt-3">
+                <%= link_to "Show", patient_path(patient), class: "btn btn-outline-primary btn-sm" %>
+
+                <div class="dropdown">
+                  <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    Treatment Status
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item text-success change-status" href="#" data-patient-id="<%= patient.id %>" data-status="treated">Treated</a></li>
+                    <li><a class="dropdown-item text-dark change-status" href="#" data-patient-id="<%= patient.id %>" data-status="dead">Dead</a></li>
+                    <li><a class="dropdown-item change-status" href="#" data-patient-id="<%= patient.id %>" data-status="not_treated">Not Treated</a></li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
       <% end %>
-    </div>
-  <% else %>
-    <!-- Message if no patients match the filter -->
-    <p class="text-muted text-center">No patients found.</p>
-  <% end %>
+    <% else %>
+      <p class="text-muted text-center">No patients found.</p>
+    <% end %>
+  </div>
 </div>
 
-<!-- Inline JavaScript for dynamic category filtering -->
+<%# JS for Category filtering and treatment status changes %>
 <%= javascript_tag do %>
-  document.addEventListener("DOMContentLoaded", function () {
-    const typeSelect = document.getElementById("category-type")
-    const valueSelect = document.getElementById("category-value")
-    const form = document.getElementById("filter-form")
+document.addEventListener("DOMContentLoaded", function() {
 
-    const optionsMap = {
-      "Age Group": ["Child", "Adult", "Senior"],
-      "Critical Status": ["Critical", "Non Critical", "Mild"],
-      "Treatment Time": ["Immediate", "Scheduled", "Routine"]
+  // Category filtering
+  const typeSelect = document.getElementById("category-type")
+  const valueSelect = document.getElementById("category-value")
+  const form = document.getElementById("filter-form")
+
+  const optionsMap = {
+    "Age Group": ["Child", "Adult", "Senior"],
+    "Critical Status": ["Critical", "Non Critical", "Mild"],
+    "Treatment Time": ["Immediate", "Scheduled", "Routine"]
+  }
+
+  typeSelect.addEventListener("change", function () {
+    const selectedType = typeSelect.value
+    const options = optionsMap[selectedType] || []
+
+    if (options.length > 0) {
+      valueSelect.innerHTML = `<option value="">Select ${selectedType}</option>` +
+        options.map(opt => `<option value="${opt}">${opt}</option>`).join("")
+      valueSelect.classList.remove("d-none")
+    } else {
+      valueSelect.innerHTML = ""
+      valueSelect.classList.add("d-none")
     }
-
-    typeSelect.addEventListener("change", function () {
-      const selectedType = typeSelect.value
-      const options = optionsMap[selectedType] || []
-
-      if (options.length > 0) {
-        valueSelect.innerHTML = `<option value="">Select ${selectedType}</option>` +
-          options.map(opt => `<option value="${opt}">${opt}</option>`).join("")
-        valueSelect.classList.remove("d-none")
-      } else {
-        valueSelect.innerHTML = ""
-        valueSelect.classList.add("d-none")
-      }
-    })
-
-    valueSelect.addEventListener("change", function () {
-      if (valueSelect.value !== "") {
-        form.submit()
-      }
-    })
   })
+
+  valueSelect.addEventListener("change", function () {
+    if (valueSelect.value !== "") {
+      form.submit()
+    }
+  })
+
+  // Treatment status buttons
+  document.querySelectorAll(".change-status").forEach(function(button) {
+    button.addEventListener("click", function(e) {
+      e.preventDefault();
+
+      const patientId = button.dataset.patientId;
+      const status = button.dataset.status;
+
+      const card = document.getElementById(`patient-${patientId}`);
+      const header = document.getElementById(`header-${patientId}`);
+      const body = document.getElementById(`body-${patientId}`);
+
+      // Remove previous classes
+      card.classList.remove("bg-success", "bg-dark", "text-white");
+      header.classList.remove("bg-success", "bg-dark", "bg-info", "text-white", "text-dark");
+      body.classList.remove("bg-success", "bg-dark", "text-white", "text-dark");
+
+      // Apply new classes
+      if (status === "treated") {
+   
+        header.classList.add("bg-success", "text-white");
+        body.classList.add("bg-success", "text-white");
+        body.classList.remove("bg-dark", "bg-white", "text-black");
+        header.querySelector("h5").innerText = "Treated";
+      } else if (status === "dead") {
+      
+        header.classList.add("bg-dark", "text-white");
+        body.classList.add("bg-dark", "text-white");
+        body.classList.remove("bg-success", "bg-white", "text-black");
+        header.querySelector("h5").innerText = "Dead";
+
+      } else if (status === "not_treated"){
+        card.classList.remove("bg-success", "bg-dark", "text-white");
+        header.classList.add("bg-info", "text-white");
+        body.classList.remove("bg-success", "bg-dark", "text-white");
+        body.classList.add("bg-white", "text-black");
+        header.querySelector("h5").innerText = "Patient Details";
+      } else {
+        header.classList.add("bg-info", "text-white");
+        header.querySelector("h5").innerText = "Patient Details";
+
+      }
+
+      // Optional: AJAX to update DB
+      fetch(`/patients/${patientId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
+        },
+        body: JSON.stringify({ patient: { treatment_status: status } })
+      });
+    });
+  });
+
+});
 <% end %>

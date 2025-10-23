@@ -1,5 +1,5 @@
 class PatientsController < ApplicationController
-  before_action :set_patient, only: %i[show edit update destroy remove_photo]
+  before_action :set_patient, only: %i[show edit update destroy remove_photo update_status]
 
   def index
     @q = Patient.ransack(params[:q])
@@ -15,9 +15,12 @@ class PatientsController < ApplicationController
         @patients = @patients.where(treatment_time: params[:category_value])
       end
     end
+
+    @patients = @patients.order(:order) # Optional: use saved order
   end
 
   def show; end
+
   def new
     @patient = Patient.new(
       category: params[:category],
@@ -50,24 +53,33 @@ class PatientsController < ApplicationController
     redirect_to patients_path, alert: "Patient was successfully destroyed."
   end
 
-  # Delete attached photo
   def remove_photo
-  if RemovePhoto.new(@patient).call
-    respond_to do |format|
-      format.html { redirect_to edit_patient_path(@patient), notice: "Photo removed successfully." }
-      format.turbo_stream { render turbo_stream: turbo_stream.replace(
-        dom_id(@patient, :photo_wrapper),
-        partial: "patients/photo_wrapper",
-        locals: { patient: @patient }
-      )}
+    if RemovePhoto.new(@patient).call
+      respond_to do |format|
+        format.html { redirect_to edit_patient_path(@patient), notice: "Photo removed successfully." }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace(dom_id(@patient, :photo_wrapper), partial: "patients/photo_wrapper", locals: { patient: @patient }) }
+      end
+    else
+      redirect_to edit_patient_path(@patient), alert: "No photo to remove."
     end
-  else
-    redirect_to edit_patient_path(@patient), alert: "No photo to remove."
   end
-end
 
+  # AJAX: Update treatment_status
+  def update_status
+    if @patient.update(treatment_status: params[:treatment_status])
+      render json: { status: @patient.treatment_status }
+    else
+      render json: { errors: @patient.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
 
-  
+  # AJAX: Reorder patients
+  def reorder
+    params[:ordered_ids].each_with_index do |id, index|
+      Patient.find(id).update(order: index + 1)
+    end
+    head :ok
+  end
 
   private
 
@@ -76,9 +88,6 @@ end
   end
 
   def patient_params
-    params.require(:patient).permit(
-      :name, :age, :diagnosis, :admitted_on,
-      :category, :critical_status, :treatment_time, :photo
-    )
+    params.require(:patient).permit(:name, :age, :diagnosis, :admitted_on, :category, :critical_status, :treatment_time, :photo, :treatment_status)
   end
 end

@@ -5,9 +5,17 @@
 Rails.application.routes.draw do
    resources :patients do
     member do
-      delete :remove_photo
+      patch :update_status
+      delete :remove_photo 
+    end
+
+
+    collection do
+      patch :reorder
     end
   end
+
+  
 
   #Sets homepage to main controller index action
   get "about", to: "about#index"

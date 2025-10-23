@@ -25,3 +25,8 @@
   transition: opacity 0.5s ease;
 }
 
+.bg-orange {
+  background-color: #fd7e14 !important; /* Bootstrap’s orange shade */
+  color: #fff !important; /* White text */
+}
+
