@@ -22,7 +22,8 @@
           style: "color: #6c757d;" %>
 
         <%= select_tag :category_value,
-              "", class: "form-select form-select-sm d-none", id: "category-value" %>
+              options_for_select([ "Child", "Adult", "Senior", "Critical", "Non Critical", "Mild", "Immediate", "Scheduled", "Routine"], params[:category_value]),
+              class: "form-select form-select-sm d-none", id: "category-value" %>
 
         <%= link_to "Clear", patients_path, class: "btn btn-outline-secondary btn-sm" %>
       <% end %>
@@ -151,5 +152,36 @@ document.addEventListener("DOMContentLoaded", function() {
   const patientsContainer = document.getElementById("patients");
   patientsContainer.addEventListener("dragover", dragOver);  // Allow the drop
   patientsContainer.addEventListener("drop", drop);  // Handle the drop
+
+  // Category filtering logic (unchanged)
+  const typeSelect = document.getElementById("category-type");
+  const valueSelect = document.getElementById("category-value");
+  const form = document.getElementById("filter-form");
+
+  const optionsMap = {
+    "Age Group": ["Child", "Adult", "Senior"],
+    "Critical Status": ["Critical", "Non Critical", "Mild"],
+    "Treatment Time": ["Immediate", "Scheduled", "Routine"]
+  };
+
+  typeSelect.addEventListener("change", function () {
+    const selectedType = typeSelect.value;
+    const options = optionsMap[selectedType] || [];
+
+    if (options.length > 0) {
+      valueSelect.innerHTML = `<option value="">Select ${selectedType}</option>` +
+        options.map(opt => `<option value="${opt}">${opt}</option>`).join("");
+      valueSelect.classList.remove("d-none");
+    } else {
+      valueSelect.innerHTML = "";
+      valueSelect.classList.add("d-none");
+    }
+  });
+
+  valueSelect.addEventListener("change", function () {
+    if (valueSelect.value !== "") {
+      form.submit();
+    }
+  });
 });
 <% end %>
