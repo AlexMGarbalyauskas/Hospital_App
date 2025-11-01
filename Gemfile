@@ -17,7 +17,12 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# Gemfile
+gem 'webpacker'
+
 gem "ransack"
+gem 'httparty'
+
 
 # For Active Storage variants
 gem "image_processing", "~> 1.2"

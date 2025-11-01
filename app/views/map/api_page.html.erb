@@ -1,0 +1,214 @@
+<h1 class="fw-bold text-primary text-center mt-5">Vaccine Map API</h1>
+<p class="text-muted fs-5 text-center mb-4">This page demonstrates the backend RESTful API for the Hospital App.</p>
+
+<h2 class="mt-5 text-primary fw-semibold">COVID-19 Vaccination Coverage</h2>
+
+<% if @vaccine_map.blank? %>
+  <p class="alert alert-warning">No vaccination data available.</p>
+<% end %>
+
+<!-- Map + overlay button wrapper -->
+<div class="position-relative my-3" style="min-height:520px;">
+  <!-- gmp web component map (attach vaccine JSON for plotting) -->
+  <gmp-map id="gmpMap"
+           style="display:block; height:500px; width:100%;"
+           center="20,0"
+           zoom="2"
+           data-vaccine-data='<%= json_escape(@vaccine_map.to_json) %>'>
+  </gmp-map>
+
+  <!-- advanced marker and hidden place picker -->
+  <gmp-advanced-marker id="gmpMarker"></gmp-advanced-marker>
+  <gmpx-place-picker id="gmpPlacePicker" style="display:none;"></gmpx-place-picker>
+
+  <!-- floating button -->
+  <button type="button"
+          class="btn btn-primary position-absolute bottom-0 end-0 m-3 shadow-sm"
+          style="z-index:1100;"
+          data-bs-toggle="modal"
+          data-bs-target="#vaccineModal">
+    <i class="bi bi-table me-1" aria-hidden="true"></i> View data table
+  </button>
+</div>
+
+<!-- Modal that contains the table -->
+<div class="modal fade" id="vaccineModal" tabindex="-1" aria-labelledby="vaccineModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-primary fw-semibold" id="vaccineModalLabel">Vaccination coverage — table</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <% if @vaccine_map.present? %>
+          <div class="table-responsive">
+            <table class="table table-sm table-striped table-bordered mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Country</th>
+                  <th class="text-end">Total doses</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @vaccine_map.each do |country, coverage| %>
+                  <tr>
+                    <td><%= country %></td>
+                    <td class="text-end"><%= number_with_delimiter(coverage) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="text-muted">No data available.</p>
+        <% end %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Correct Google Maps loader (ensure proper API key) -->
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCydU2EJkqDCI32gKWRyfEJEpX9MFsknP8&v=weekly&libraries=places&callback=init">
+</script>
+
+<script>
+  // called by Google Maps API when loaded
+  window.init = async function() {
+    // wait for GMP web components to be defined
+    try { await customElements.whenDefined('gmp-map'); } catch (e) { console.warn('gmp-map not defined', e); }
+
+    var mapEl = document.getElementById('gmpMap');
+    if (!mapEl) return;
+
+    // basic map options
+    try {
+      if (mapEl.innerMap && mapEl.innerMap.setOptions) {
+        mapEl.innerMap.setOptions({ mapTypeControl: false });
+      }
+    } catch (e) { /* ignore */ }
+
+    // parse vaccine data
+    var raw = mapEl.dataset.vaccineData || '{}';
+    var vaccineData;
+    try { vaccineData = JSON.parse(raw); } catch (e) { console.warn('vaccine JSON parse failed', e); vaccineData = {}; }
+
+    // normalize entries
+    var entries = [];
+    if (Array.isArray(vaccineData)) {
+      vaccineData.forEach(function(it) {
+        var country = it.country || it.name;
+        var value = it.timeline ? Object.values(it.timeline).pop() : (it.coverage || it.vaccinated || 0);
+        if (country) entries.push({ country: String(country), value: Number(value) || 0 });
+      });
+    } else if (vaccineData && typeof vaccineData === 'object') {
+      Object.keys(vaccineData).forEach(function(k) { entries.push({ country: k, value: Number(vaccineData[k]) || 0 }); });
+    }
+
+    // load centroids file
+    var CENTROIDS = {};
+    try {
+      var res = await fetch('/country_centroids.json');
+      if (res.ok) CENTROIDS = await res.json();
+    } catch (e) { console.warn('failed to load centroids', e); }
+
+    function normalizeName(n) {
+      if (!n) return n;
+      return n.replace(/\s*\(.*?\)\s*/g, '').replace(/&/g, 'and').trim();
+    }
+
+    var max = Math.max.apply(null, entries.map(function(e){ return e.value || 0; }).concat([1]));
+
+    var infowindow = new google.maps.InfoWindow();
+
+    entries.forEach(function(e) {
+      var coord = CENTROIDS[e.country] || CENTROIDS[normalizeName(e.country)] || null;
+      if (!coord) {
+        // common aliases
+        if (e.country === 'UK') coord = CENTROIDS['United Kingdom'];
+        if (e.country === 'Canada') coord = CENTROIDS['Canada'];
+        if (e.country === 'Mexico') coord = CENTROIDS['Mexico'];
+        if (e.country === 'USA') coord = CENTROIDS['United States'];
+        if (e.country === 'Brazil') coord = CENTROIDS['Brazil'];
+        if (e.country === 'Australia') coord = CENTROIDS['Australia'];
+        if (e.country === 'Japan') coord = CENTROIDS['Japan'];
+        if (e.country === 'South Korea') coord = CENTROIDS['South Korea'];
+        if (e.country === 'Germany') coord = CENTROIDS['Germany'];
+      }
+      if (!coord) return;
+
+      var ratio = (e.value || 0) / max;
+      var color = ratio > 0.66 ? '#1a9850' : ratio > 0.33 ? '#fee08b' : '#d73027';
+
+      // Customize the circle size and color for specific countries
+      var colorMap = {
+        "Russia": 'blue',
+        "Canada": 'red', 
+        "Mexico": 'green', 
+        "USA": 'navy', 
+        "Ireland": 'green',
+        "India": 'orange', 
+        "UK": 'red',
+        "Brazil": 'purple',
+        "Australia": 'orange',
+        "Japan": 'yellow',
+        "South Korea": 'pink',
+        "Germany": 'black',
+        "Ukraine": 'yellow',
+        "Sweden": 'yellow', 
+        "France": 'blue', 
+        "Iran": 'green',
+        "Egypt": 'orange' 
+      };
+
+      var radiusMap = {
+        "Russia": 1000000,
+        "Canada": 900000, 
+        "Mexico": 498000, 
+        "USA": 950000, 
+        "Ireland": 80000,
+        "UK": 70000,
+        "Brazil": 900000,
+        "Australia": 850000,
+        "Japan": 720000,
+        "South Korea": 72000,
+        "Germany": 198000,
+        "Ukraine": 194000,
+        "Sweden": 194000,
+        "France": 294000,
+        "Iran": 390000,
+        "Egypt": 350000,
+        "India": 850000
+
+      };
+
+      var color = colorMap[e.country] || color;  // Apply custom color if it exists
+      var radius = radiusMap[e.country] || Math.max(40000, Math.sqrt((e.value||0)/max) * 800000);
+
+      var circle = new google.maps.Circle({
+        strokeColor: color,
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: color,
+        fillOpacity: 0.35,
+        map: mapEl.innerMap,
+        center: coord,
+        radius: radius
+      });
+
+      circle.addListener('click', function() {
+        infowindow.setContent('<strong>' + e.country + '</strong><br>' + Number(e.value||0).toLocaleString() + ' total');
+        infowindow.setPosition(circle.getCenter());
+        infowindow.open(mapEl.innerMap);
+      });
+    });
+  };
+
+  // ensure re-init on Turbo visits if API already loaded
+  document.addEventListener('turbo:load', function() {
+    if (typeof google !== 'undefined' && typeof window.init === 'function') window.init();
+  });
+</script>

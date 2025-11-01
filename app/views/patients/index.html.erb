@@ -1,8 +1,6 @@
-<%# Patients index page %>
 <% content_for :title, "Patients" %>
 
 <div class="container mt-4">
-
   <!-- Top bar: New Patient + Search + Filters -->
   <div class="d-flex flex-wrap align-items-center gap-3 w-100 mb-3">
     <%= link_to "New Patient", select_patient_category_path, class: "btn btn-success btn-sm px-4" %>
@@ -43,7 +41,7 @@
   <% end %>
 
   <!-- Patients cards -->
-  <div id="patients" class="row mt-3">
+  <div id="patients" class="row mt-3" style="display: flex; flex-wrap: wrap;">
     <% if @patients.any? %>
       <% @patients.each do |patient| %>
 
@@ -62,9 +60,9 @@
              else "bg-secondary text-white"
            end %>
 
-        <div id="patient-<%= patient.id %>" class="col-md-4 mb-4">
-          <div class="card shadow-sm <%= card_class %>" data-patient-id="<%= patient.id %>">
-            <div class="card-header <%= patient.treatment_status.in?(["treated","dead"]) ? "" : "bg-info" %> text-white text-center" id="header-<%= patient.id %>">
+        <div id="patient-<%= patient.id %>" class="col-md-4 mb-4 patient-card" draggable="true" data-patient-id="<%= patient.id %>" ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="drop(event)">
+          <div class="card shadow-sm <%= card_class %>">
+            <div class="card-header <%= patient.treatment_status.in?(["treated","dead"]) ? "" : "bg-info" %> text-white text-center">
               <h5 class="mb-0">
                 <% if patient.treatment_status == "treated" %>
                   Treated
@@ -76,7 +74,7 @@
               </h5>
             </div>
 
-            <div class="card-body text-start" id="body-<%= patient.id %>">
+            <div class="card-body text-start">
               <div class="mb-3 text-center">
                 <% if patient.photo.attached? %>
                   <%= image_tag patient.photo.variant(resize_to_limit: [80, 80]), class: "rounded-circle border", alt: "Patient photo" %>
@@ -99,20 +97,9 @@
               </p>
               <p><strong>Treatment Time:</strong> <%= patient.treatment_time.presence || "Not set" %></p>
 
-              <!-- Buttons: Show + Treatment Status -->
+              <!-- Buttons: Show -->
               <div class="d-flex justify-content-center align-items-center gap-2 mt-3">
                 <%= link_to "Show", patient_path(patient), class: "btn btn-outline-primary btn-sm" %>
-
-                <div class="dropdown">
-                  <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    Treatment Status
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item text-success change-status" href="#" data-patient-id="<%= patient.id %>" data-status="treated">Treated</a></li>
-                    <li><a class="dropdown-item text-dark change-status" href="#" data-patient-id="<%= patient.id %>" data-status="dead">Dead</a></li>
-                    <li><a class="dropdown-item change-status" href="#" data-patient-id="<%= patient.id %>" data-status="not_treated">Not Treated</a></li>
-                  </ul>
-                </div>
               </div>
             </div>
           </div>
@@ -125,95 +112,44 @@
   </div>
 </div>
 
-<%# JS for Category filtering and treatment status changes %>
 <%= javascript_tag do %>
 document.addEventListener("DOMContentLoaded", function() {
+  let draggedElement = null;
 
-  // Category filtering
-  const typeSelect = document.getElementById("category-type")
-  const valueSelect = document.getElementById("category-value")
-  const form = document.getElementById("filter-form")
-
-  const optionsMap = {
-    "Age Group": ["Child", "Adult", "Senior"],
-    "Critical Status": ["Critical", "Non Critical", "Mild"],
-    "Treatment Time": ["Immediate", "Scheduled", "Routine"]
+  // Function to handle the drag start
+  function dragStart(event) {
+    draggedElement = event.target;
+    event.dataTransfer.setData("text", draggedElement.id);  // Store dragged item ID
   }
 
-  typeSelect.addEventListener("change", function () {
-    const selectedType = typeSelect.value
-    const options = optionsMap[selectedType] || []
-
-    if (options.length > 0) {
-      valueSelect.innerHTML = `<option value="">Select ${selectedType}</option>` +
-        options.map(opt => `<option value="${opt}">${opt}</option>`).join("")
-      valueSelect.classList.remove("d-none")
-    } else {
-      valueSelect.innerHTML = ""
-      valueSelect.classList.add("d-none")
+  // Function to handle when an item is dropped
+  function drop(event) {
+    event.preventDefault();
+    
+    const target = event.target.closest(".col-md-4");  // Ensure the drop target is a patient card
+    if (target && target !== draggedElement) {
+      // Swap positions of dragged and target elements
+      const parent = target.parentNode;
+      parent.insertBefore(draggedElement, target.nextSibling);  // Insert after the target
     }
-  })
+  }
 
-  valueSelect.addEventListener("change", function () {
-    if (valueSelect.value !== "") {
-      form.submit()
-    }
-  })
+  // Function to allow dragging over the target
+  function dragOver(event) {
+    event.preventDefault();  // Allow the drop
+  }
 
-  // Treatment status buttons
-  document.querySelectorAll(".change-status").forEach(function(button) {
-    button.addEventListener("click", function(e) {
-      e.preventDefault();
-
-      const patientId = button.dataset.patientId;
-      const status = button.dataset.status;
-
-      const card = document.getElementById(`patient-${patientId}`);
-      const header = document.getElementById(`header-${patientId}`);
-      const body = document.getElementById(`body-${patientId}`);
-
-      // Remove previous classes
-      card.classList.remove("bg-success", "bg-dark", "text-white");
-      header.classList.remove("bg-success", "bg-dark", "bg-info", "text-white", "text-dark");
-      body.classList.remove("bg-success", "bg-dark", "text-white", "text-dark");
-
-      // Apply new classes
-      if (status === "treated") {
-   
-        header.classList.add("bg-success", "text-white");
-        body.classList.add("bg-success", "text-white");
-        body.classList.remove("bg-dark", "bg-white", "text-black");
-        header.querySelector("h5").innerText = "Treated";
-      } else if (status === "dead") {
-      
-        header.classList.add("bg-dark", "text-white");
-        body.classList.add("bg-dark", "text-white");
-        body.classList.remove("bg-success", "bg-white", "text-black");
-        header.querySelector("h5").innerText = "Dead";
-
-      } else if (status === "not_treated"){
-        card.classList.remove("bg-success", "bg-dark", "text-white");
-        header.classList.add("bg-info", "text-white");
-        body.classList.remove("bg-success", "bg-dark", "text-white");
-        body.classList.add("bg-white", "text-black");
-        header.querySelector("h5").innerText = "Patient Details";
-      } else {
-        header.classList.add("bg-info", "text-white");
-        header.querySelector("h5").innerText = "Patient Details";
-
-      }
-
-      // Optional: AJAX to update DB
-      fetch(`/patients/${patientId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
-        },
-        body: JSON.stringify({ patient: { treatment_status: status } })
-      });
-    });
+  // Attach drag and drop functionality to all patient cards
+  const patientCards = document.querySelectorAll(".patient-card");
+  
+  patientCards.forEach(card => {
+    card.setAttribute("draggable", "true");  // Make each card draggable
+    card.addEventListener("dragstart", dragStart);  // Add the drag start event
   });
 
+  // Allow cards to be dropped
+  const patientsContainer = document.getElementById("patients");
+  patientsContainer.addEventListener("dragover", dragOver);  // Allow the drop
+  patientsContainer.addEventListener("drop", drop);  // Handle the drop
 });
 <% end %>

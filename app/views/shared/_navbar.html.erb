@@ -21,6 +21,9 @@
           <%= link_to "About/Video", about_path, class: "nav-link #{'active' if current_page?(about_path)}" %>
         </li>
         <li class="nav-item">
+          <%= link_to "API", api_page_path, class: "nav-link #{'active' if current_page?(api_page_path)}" %>
+        </li>
+        <li class="nav-item">
           <%= link_to "GitHub-Repo-Link", "https://github.com/AlexMGarbalyauskas/Hospital_App", class: "nav-link", target: "_blank", rel: "noopener" %>
         </li>
       </ul>

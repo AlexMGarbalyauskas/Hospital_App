@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     member do
       patch :update_status
       delete :remove_photo 
+      patch :update_photo  
     end
 
 
@@ -19,6 +20,8 @@ Rails.application.routes.draw do
 
   #Sets homepage to main controller index action
   get "about", to: "about#index"
+
+  get "api", to: "map#api_page", as: :api_page
 
   #Custom route for selecting patient category before creating a new patien 
   get 'select_category', to: 'patients#select_category', as: :select_patient_category

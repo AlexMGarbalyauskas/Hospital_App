@@ -1,14 +1,93 @@
-<% content_for :title, "Editing Patient" %>
+<%= content_for :title, "Editing Patient" %>
 
 <!-- Centered container with spacing from navbar -->
 <div class="d-flex justify-content-center pt-5">
-  <div class="card shadow-sm w-100" style="max-width: 380px;">
+  <div class="card shadow-sm w-100" style="max-width: 600px;"> <!-- Reduced the max-width for a more compact layout -->
     <div class="card-header bg-warning text-dark text-center">
       <h4 class="mb-0">Editing Patient</h4>
     </div>
 
     <div class="card-body">
-      <%= render "form", patient: @patient %>
+      <%= form_with model: @patient, local: false, html: { multipart: true } do |f| %>
+        <!-- PHOTO UPLOAD & REMOVE -->
+        <div class="mb-4 text-center">
+          <p class="fw-bold mb-2">Profile Picture:</p>
+
+          <%# Image wrapper for Turbo replacement %>
+          <div id="<%= dom_id(@patient, :photo_wrapper) %>">
+            <% if @patient.photo.attached? %>
+              <%= image_tag @patient.photo.variant(resize_to_limit: [100, 100]),
+                            id: dom_id(@patient, :photo),
+                            class: "rounded-circle border mb-2" %>
+
+              <!-- ✅ Remove button placed directly below image -->
+              <div class="mt-2">
+                <button type="button"
+                        id="reset-photo-btn-<%= @patient.id %>"
+                        class="btn btn-sm btn-outline-danger">
+                  Reset to Default Photo
+                </button>
+              </div>
+            <% else %>
+              <%= image_tag "user.png",
+                            id: dom_id(@patient, :photo),
+                            class: "rounded-circle border mb-2",
+                            width: 100,
+                            height: 100,
+                            alt: "Default patient photo" %>
+            <% end %>
+          </div>
+
+          <!-- Upload field -->
+          <%= f.label :photo, "Upload Photo", class: "form-label mt-3" %>
+          <%= f.file_field :photo,
+                           class: "form-control",
+                           data: { action: "change->preview#update" } %>
+        </div>
+
+        <!-- ROW START -->
+        <div class="row">
+          <!-- Name Field -->
+          <div class="col-md-6">
+            <div class="mb-3">
+              <%= f.label :name, class: "form-label" %>
+              <%= f.text_field :name, class: "form-control" %>
+            </div>
+          </div>
+
+          <!-- Age Field -->
+          <div class="col-md-6">
+            <div class="mb-3">
+              <%= f.label :age, class: "form-label" %>
+              <%= f.number_field :age, class: "form-control" %>
+            </div>
+          </div>
+        </div>
+        <!-- ROW END -->
+
+        <!-- DIAGNOSIS -->
+        <div class="mb-3">
+          <%= f.label :diagnosis, class: "form-label" %>
+          <%= f.text_area :diagnosis, class: "form-control", rows: 3 %>
+        </div>
+
+        <!-- ADMITTED ON -->
+        <div class="mb-3">
+          <%= f.label :admitted_on, class: "form-label" %>
+          <%= f.date_field :admitted_on, class: "form-control" %>
+        </div>
+
+        <!-- HIDDEN FIELDS FOR CATEGORY / STATUS / TREATMENT -->
+        <%= f.hidden_field :category %>
+        <%= f.hidden_field :critical_status %>
+        <%= f.hidden_field :treatment_time %>
+
+        <!-- SUBMIT BUTTON -->
+        <div class="text-center mt-4">
+          <%= f.submit @patient.new_record? ? "Create Patient" : "Update Patient",
+                      class: "btn btn-success px-5" %>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
@@ -18,3 +97,26 @@
   <%= link_to "← Back to Patients", patients_path, class: "btn btn-outline-secondary btn-sm" %>
   <%= link_to "View Patient", @patient, class: "btn btn-outline-primary btn-sm" %>
 </div>
+
+<%= javascript_tag do %>
+document.addEventListener("DOMContentLoaded", function() {
+  // Grab the reset photo button and the image element
+  const resetButton = document.getElementById("reset-photo-btn-<%= @patient.id %>");
+  const patientPhoto = document.getElementById("<%= dom_id(@patient, :photo) %>");
+  const form = document.getElementById("patient-form");
+
+  // Event listener for reset button
+  resetButton.addEventListener("click", function() {
+    // Change the image to default
+    if (patientPhoto) {
+      patientPhoto.src = "<%= asset_path('user.png') %>"; // Reset to default image
+    }
+
+    // Reset the file input to "unselect" any selected image
+    const fileInput = form.querySelector("input[type='file']");
+    if (fileInput) {
+      fileInput.value = ''; // Reset the input field
+    }
+  });
+});
+<% end %>

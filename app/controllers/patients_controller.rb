@@ -1,5 +1,5 @@
 class PatientsController < ApplicationController
-  before_action :set_patient, only: %i[show edit update destroy remove_photo update_status]
+  before_action :set_patient, only: %i[show edit update destroy update_status]
 
   def index
     @q = Patient.ransack(params[:q])
@@ -41,6 +41,13 @@ class PatientsController < ApplicationController
   def edit; end
 
   def update
+    # Check if no photo is uploaded in the form
+    if params[:patient][:photo].blank?
+      # If no photo, purge the existing photo (reset to default)
+      @patient.photo.purge
+    end
+
+    # Update patient attributes including photo
     if @patient.update(patient_params)
       redirect_to @patient, notice: "Patient was successfully updated."
     else
@@ -53,16 +60,7 @@ class PatientsController < ApplicationController
     redirect_to patients_path, alert: "Patient was successfully destroyed."
   end
 
-  def remove_photo
-    if RemovePhoto.new(@patient).call
-      respond_to do |format|
-        format.html { redirect_to edit_patient_path(@patient), notice: "Photo removed successfully." }
-        format.turbo_stream { render turbo_stream: turbo_stream.replace(dom_id(@patient, :photo_wrapper), partial: "patients/photo_wrapper", locals: { patient: @patient }) }
-      end
-    else
-      redirect_to edit_patient_path(@patient), alert: "No photo to remove."
-    end
-  end
+  
 
   # AJAX: Update treatment_status
   def update_status
