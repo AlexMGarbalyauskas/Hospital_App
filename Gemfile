@@ -23,6 +23,10 @@ gem 'webpacker'
 gem "ransack"
 gem 'httparty'
 
+gem 'rspec-rails'
+  gem 'factory_bot_rails'  # Optional, for factories to generate test data
+  gem 'faker'
+  gem 'rails-controller-testing'
 
 # For Active Storage variants
 gem "image_processing", "~> 1.2"
