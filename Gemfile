@@ -78,3 +78,11 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+
+
+
+gem "importmap-rails"
+
+gem "sprockets-rails"
+
