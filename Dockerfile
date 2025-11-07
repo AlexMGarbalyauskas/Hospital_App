@@ -8,7 +8,6 @@
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-RUN chmod +x bin/rails
 ARG RUBY_VERSION=3.4.6
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
@@ -43,12 +42,20 @@ RUN bundle install && \
 # Copy application code
 COPY . .
 
+# Copy application code
+COPY . .
+
+# Ensure bin/rails is executable
+RUN chmod +x bin/rails
+
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
+# Precompile bootsnap code for faster boot times
+RUN bundle exec bootsnap precompile app/ lib/
 
 
 
