@@ -1,93 +1,31 @@
-<% content_for :title, "Patients" %>
+<div class="container-fluid ">
+  <div class="row align-items-center justify-content-center">
 
-<div class="container mt-4">
-  <div class="mb-4">
-    <h1 class="display-5 fw-bold text-primary">Patient Management</h1>
-    <p class="lead text-muted">Search, view, and manage all registered patients in the system.</p>
-  </div>
+    <!-- LEFT SIDE: Intro / Buttons -->
+    <div class="col-md-6 px-5 mb-5 mb-md-0 border-end border-2 border-light">
+      <h1 class="mb-4 fw-bold text-primary text-center text-md-start">Welcome to Hospital App</h1>
 
-  <div class="d-flex flex-wrap align-items-center gap-3 w-100 mb-3">
-    <%= link_to "New Patient", new_patient_path, class: "btn btn-success btn-sm px-4" %>
+      <p class="fs-5 text-muted text-center text-md-start mb-3">
+        Manage patient records with ease and efficiency.
+      </p>
+      <p class="fs-5 text-primary text-center text-md-start mb-4">
+        Create, update, and review detailed medical logs securely.
+      </p>
 
-    <div class="flex-grow-1">
-      <%= form_with url: patients_path, method: :get, local: true, class: "d-flex gap-2 align-items-center" do %>
-        <%= text_field_tag :query, params[:query], placeholder: "Search by name, age, diagnosis, critical or treatment status...", class: "form-control form-control-sm", style: "min-width: 300px; max-width: 500px;" %>
-
-        <%= select_tag :category_type, options_for_select([["Search by category", ""], "Age Group", "Critical Status", "Treatment Time"], params[:category_type]), class: "form-select form-select-sm" %>
-
-        <%= select_tag :category_value, options_for_select(["Child", "Adult", "Senior", "Critical", "Non Critical", "Mild", "Immediate", "Scheduled", "Routine"], params[:category_value]), class: "form-select form-select-sm" %>
-
-        <%= submit_tag "Search", class: "btn btn-outline-primary btn-sm" %>
-        <%= link_to "Clear", patients_path, class: "btn btn-outline-secondary btn-sm" %>
-      <% end %>
-    </div>
-  </div>
-
-  <% if params[:category_type].present? && params[:category_value].present? %>
-    <div class="alert alert-info d-flex justify-content-between align-items-center">
-      <div>
-        Showing patients with
-        <strong><%= params[:category_type] %></strong> =
-        <strong><%= params[:category_value] %></strong>
-      </div>
-      <%= link_to "Clear Filter", patients_path, class: "btn btn-sm btn-outline-secondary" %>
-    </div>
-  <% end %>
-
-  <div class="row">
-    <% @patients.each_slice(3) do |group| %>
-      <div class="row mb-4">
-        <% group.each do |patient| %>
-          <div class="col-md-4">
-            <%= turbo_frame_tag dom_id(patient) do %>
-              <div class="card shadow rounded-4 p-0 h-100">
-                <div class="row g-0 h-100">
-                  <div class="col-5 bg-dark text-white d-flex flex-column align-items-center justify-content-center p-3">
-                    <h5 class="fw-bold text-center mb-3"><%= patient.name %></h5>
-
-                    <% if patient.profile_pic.attached? %>
-                      <%= image_tag patient.profile_pic, class: "img-thumbnail", style: "width: 100px; height: auto;" %>
-                    <% else %>
-                      <%= image_tag "user.png", class: "img-thumbnail", style: "width: 100px; height: auto;" %>
-                    <% end %>
-
-                    <div class="d-flex flex-column gap-2 mt-3 w-100">
-                      <%= link_to "Show", patient_path(patient), class: "btn btn-outline-light btn-sm" %>
-                      <%= link_to "Edit", edit_patient_path(patient), class: "btn btn-outline-secondary btn-sm" %>
-                      <%= link_to "Delete", patient_path(patient),
-                            data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
-                            class: "btn btn-outline-danger btn-sm" %>
-                    </div>
-                  </div>
-
-                  <div class="col-7 p-3">
-                    <p class="mb-2"><strong>Age:</strong> <%= patient.age %> (<%= patient.age_group %>)</p>
-                    <p class="mb-2"><strong>Diagnosis:</strong> <%= patient.diagnosis %></p>
-
-                    <% badge_class, icon = case patient.critical_status
-                      when "Mild" then ["bg-warning text-dark", nil]
-                      when "Critical" then ["bg-orange text-white", nil]
-                      when "Highly Critical" then ["bg-danger text-white", nil]
-                      when "Immediate" then ["bg-danger text-white", "⚠️"]
-                      else ["bg-secondary text-white", nil]
-                    end %>
-
-                    <p class="mb-2">
-                      <strong>Critical Status:</strong>
-                      <span class="badge <%= badge_class %> px-2 py-1">
-                        <%= icon %> <%= patient.critical_status %>
-                      </span>
-                    </p>
-
-                    <p class="mb-2"><strong>Treatment Status:</strong> <%= patient.treatment_status %></p>
-                    <p class="mb-0"><strong>Living Status:</strong> <%= patient.living_status %></p>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          </div>
+      <div class="text-center text-md-start">
+        <% if session[:user_id] %>
+          <%= link_to "Manage Patients", patients_path, class: "btn btn-primary px-4 me-2 mb-2" %>
+        <% else %>
+          <p class="text-danger mb-3">Please log in to create and access patient data.</p>
+          <%= link_to "Login", sign_in_path, class: "btn btn-outline-primary px-4 me-2 mb-2" %>
+          <%= link_to "Sign Up", sign_up_path, class: "btn btn-outline-secondary px-4 mb-2" %>
         <% end %>
       </div>
-    <% end %>
+    </div>
+
+    <!-- RIGHT SIDE: Carousel -->
+    <div class="col-md-6 px-4">
+      <%= render "shared/sectiontwo" %>
+    </div>
   </div>
 </div>
