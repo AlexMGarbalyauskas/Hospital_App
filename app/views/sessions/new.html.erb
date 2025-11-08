@@ -1,0 +1,28 @@
+<%# Sign In Section %>
+<div class="container d-flex justify-content-center pt-5">
+  <div class="card shadow-sm w-100" style="max-width: 400px;">
+    <div class="card-header bg-primary text-white text-center">
+      <h4 class="mb-0">Sign In</h4>
+    </div>
+
+    <div class="card-body">
+      <%= form_with url: sign_in_path do |form| %>
+
+        <div class="mb-3">
+          <%= form.label :email %>
+          <%= form.text_field :email, class: "form-control", placeholder: "steve@apple.com" %>
+        </div>
+
+        <div class="mb-3">
+          <%= form.label :password %>
+          <%= form.password_field :password, class: "form-control", placeholder: "password" %>
+        </div>
+
+        <div class="mb-3 text-center">
+          <%= form.submit "Sign In", class: "btn btn-primary px-4" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>

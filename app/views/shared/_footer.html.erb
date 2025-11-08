@@ -1,19 +1,33 @@
-<footer class="footer bg-light text-muted py-4 mt-5 border-top shadow-sm">
+<footer class="bg-light text-muted py-4 mt-5 border-top shadow-sm">
   <div class="container text-center">
-    <h5 class="fw-bold text-primary mb-2">Hospital App</h5>
-    <p class="small mb-3 text-secondary">Efficient way of logging patients.</p>
 
-    <div class="footer-links mb-3">
-      <%= link_to "About", about_path, class: "footer-link" %> |
-      <%= link_to "Contact", "#", class: "footer-link" %> |
-      <%= link_to "Privacy Policy", "#", class: "footer-link" %> |
-      <%= link_to "GitHub", "https://github.com/AlexMGarbalyauskas/Hospital_App", target: "_blank", class: "footer-link" %>
+    <!-- Branding -->
+    <h5 class="fw-bold text-primary mb-2">Hospital App</h5>
+    <p class="small mb-3 text-secondary">
+      Effiecient way of logging patients.
+    </p>
+
+    <!-- Navigation Links -->
+    <div class="mb-3">
+      <%= link_to "About", about_path, class: "text-decoration-none text-primary mx-2 fw-semibold hover-link" %> |
+      <%= link_to "Contact", "#", class: "text-decoration-none text-primary mx-2 fw-semibold hover-link" %> |
+      <%= link_to "Privacy Policy", "#", class: "text-decoration-none text-primary mx-2 fw-semibold hover-link" %> |
+      <%= link_to "GitHub", "https://github.com/AlexMGarbalyauskas/Hospital_App", target: "_blank", class: "text-decoration-none text-primary mx-2 fw-semibold hover-link" %>
     </div>
 
-    <hr class="mx-auto border-secondary opacity-25 mb-3" style="width: 75%;">
+    <!-- Divider -->
+    <hr class="border-secondary opacity-25 mb-3" style="width: 75%; margin: auto;">
 
+    <!-- Copyright -->
     <p class="small mb-0 text-secondary">
       &copy; <%= Time.current.year %> Hospital App — CA project.
     </p>
   </div>
+
+  <style>
+    .hover-link:hover {
+      text-decoration: underline;
+      color: #0d6efd !important; /* Bootstrap primary blue */
+    }
+  </style>
 </footer>

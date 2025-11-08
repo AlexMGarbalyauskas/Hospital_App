@@ -23,6 +23,10 @@ gem "solid_queue"
 gem "solid_cable"
 
 
+gem "bcrypt", "~> 3.1.7"
+gem "bootstrap", "~> 5.3.0"
+
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
@@ -47,3 +51,7 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 end
+
+gem "sassc-rails", "~> 2.1"
+
+gem "dartsass-rails", "~> 0.5.1"
