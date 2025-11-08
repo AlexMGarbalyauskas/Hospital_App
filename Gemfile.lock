@@ -401,7 +401,7 @@ DEPENDENCIES
   brakeman
   dartsass-rails (~> 0.5.1)
   debug
-  image_processing
+  image_processing (~> 1.14)
   jbuilder
   kamal
   propshaft
