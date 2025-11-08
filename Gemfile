@@ -26,6 +26,7 @@ gem "solid_cable"
 gem "bcrypt", "~> 3.1.7"
 gem "bootstrap", "~> 5.3.0"
 gem "activestorage"
+gem 'turbo-rails'
 
 
 # Reduces boot times through caching; required in config/boot.rb

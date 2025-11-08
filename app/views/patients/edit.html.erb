@@ -1,26 +1,49 @@
-<%= form_with model: @patient, local: true, html: { multipart: true } do |form| %>
-  
-  <%= form.label :living_status, "Living Status" %>
-  <%= form.select :living_status, ["Normal", "Went Away Treated", "Died"], {}, class: "form-select" %>
+<div class="container d-flex justify-content-center mt-5">
+  <div class="card shadow rounded-4 p-4" style="max-width: 600px; width: 100%;">
+    <h2 class="text-primary fw-bold text-center mb-4">
+      <%= @patient.new_record? ? "New Patient" : "Edit Patient" %>
+    </h2>
 
-  
-  <%= form.label :name %>
-  <%= form.text_field :name, class: "form-control" %>
+    <%= form_with model: @patient, local: true, html: { multipart: true } do |form| %>
+      <div class="mb-3">
+        <%= form.label :living_status, "Living Status" %>
+        <%= form.select :living_status, ["Normal", "Went Away Treated", "Died"], {}, class: "form-select" %>
+      </div>
 
-  <%= form.label :age %>
-  <%= form.number_field :age, class: "form-control" %>
+      <div class="mb-3">
+        <%= form.label :name %>
+        <%= form.text_field :name, class: "form-control" %>
+      </div>
 
-  <%= form.label :diagnosis %>
-  <%= form.text_area :diagnosis, class: "form-control" %>
+      <div class="mb-3">
+        <%= form.label :age %>
+        <%= form.number_field :age, class: "form-control" %>
+      </div>
 
-  <%= form.label :critical_status %>
-  <%= form.select :critical_status, ["Mild", "Critical", "Highly Critical", "Immediate"], {}, class: "form-select" %>
+      <div class="mb-3">
+        <%= form.label :diagnosis %>
+        <%= form.text_area :diagnosis, class: "form-control" %>
+      </div>
 
-  <%= form.label :treatment_status %>
-  <%= form.select :treatment_status, ["Cured", "Not Treated", "Dead"], {}, class: "form-select" %>
+      <div class="mb-3">
+        <%= form.label :critical_status %>
+        <%= form.select :critical_status, ["Mild", "Critical", "Highly Critical", "Immediate"], {}, class: "form-select" %>
+      </div>
 
-  <%= form.label :profile_pic %>
-  <%= form.file_field :profile_pic, class: "form-control" %>
+      <div class="mb-3">
+        <%= form.label :treatment_status %>
+        <%= form.select :treatment_status, ["Cured", "Not Treated", "Dead"], {}, class: "form-select" %>
+      </div>
 
-  <%= form.submit class: "btn btn-primary mt-3" %>
-<% end %>
+      <div class="mb-3">
+        <%= form.label :profile_pic %>
+        <%= form.file_field :profile_pic, class: "form-control" %>
+      </div>
+
+      <div class="d-flex justify-content-between mt-4">
+        <%= link_to "Back to Patients", patients_path, class: "btn btn-outline-secondary" %>
+        <%= form.submit class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -3,17 +3,30 @@ class PatientsController < ApplicationController
 
   def index
     @patients = Patient.all
+
+    # Free-text search (SQLite-compatible case-insensitive)
     if params[:query].present?
-      q = "%#{params[:query]}%"
+      q = "%#{params[:query].downcase}%"
       @patients = @patients.where(
-        "name ILIKE :q OR CAST(age AS TEXT) ILIKE :q OR diagnosis ILIKE :q OR critical_status ILIKE :q OR treatment_status ILIKE :q OR living_status ILIKE :q",
+        "LOWER(name) LIKE :q OR CAST(age AS TEXT) LIKE :q OR LOWER(diagnosis) LIKE :q OR LOWER(critical_status) LIKE :q OR LOWER(treatment_status) LIKE :q OR LOWER(living_status) LIKE :q",
         q: q
       )
     end
+
+    # Category filter
+    if params[:category_type].present? && params[:category_value].present?
+      case params[:category_type]
+      when "Age Group"
+        @patients = @patients.select { |p| p.age_group == params[:category_value] }
+      when "Critical Status"
+        @patients = @patients.where(critical_status: params[:category_value])
+      when "Treatment Time"
+        @patients = @patients.where(treatment_status: params[:category_value])
+      end
+    end
   end
 
-  def show
-  end
+  def show; end
 
   def new
     @patient = Patient.new
@@ -28,8 +41,7 @@ class PatientsController < ApplicationController
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     if @patient.update(patient_params)
@@ -40,8 +52,14 @@ class PatientsController < ApplicationController
   end
 
   def destroy
-    @patient.destroy
-    redirect_to patients_path, notice: "Patient deleted."
+    if @patient.destroy
+      respond_to do |format|
+        format.html { redirect_to patients_path, notice: "Patient deleted successfully." }
+        format.turbo_stream { render turbo_stream: turbo_stream.remove(dom_id(@patient)) }
+      end
+    else
+      redirect_to patients_path, alert: "Unable to delete patient."
+    end
   end
 
   private

@@ -1,23 +1,49 @@
-<div class="container d-flex justify-content-center">
-  <div class="card shadow rounded-4 p-4" style="max-width: 600px; width: 100%;">
-    <div class="text-center">
-      <h2 class="text-primary fw-bold"><%= @patient.name %></h2>
+<div class="container d-flex justify-content-center mt-5">
+  <div class="card shadow rounded-4 p-0" style="max-width: 700px; width: 100%;">
+    <div class="row g-0">
+      
+      <!-- Left Side: Image + Name + Buttons -->
+      <div class="col-md-5 bg-dark text-white d-flex flex-column align-items-center justify-content-center p-4">
+        <h2 class="fw-bold mb-3 text-center">
+          <%= @patient.name %>
+        </h2>
 
-      <% if @patient.profile_pic.attached? %>
-        <%= image_tag @patient.profile_pic, class: "img-thumbnail mt-3", style: "width: 200px; height: auto;" %>
-      <% end %>
-    </div>
+        <% if @patient.profile_pic.attached? %>
+          <%= image_tag @patient.profile_pic, class: "img-thumbnail", style: "width: 180px; height: auto;" %>
+        <% else %>
+          <%= image_tag "user.png", class: "img-thumbnail", style: "width: 180px; height: auto;" %>
+        <% end %>
 
-    <ul class="list-group list-group-flush mt-4">
-      <li class="list-group-item"><strong>Age:</strong> <%= @patient.age %> (<%= @patient.age_group %>)</li>
-      <li class="list-group-item"><strong>Diagnosis:</strong> <%= @patient.diagnosis %></li>
-      <li class="list-group-item"><strong>Critical Status:</strong> <%= @patient.critical_status %></li>
-      <li class="list-group-item"><strong>Treatment Status:</strong> <%= @patient.treatment_status %></li>
-      <li class="list-group-item"><strong>Living Status:</strong> <%= @patient.living_status %></li>
-    </ul>
+        <div class="d-flex justify-content-center gap-2 mt-4 w-100">
+          <%= link_to "Back", patients_path, class: "btn btn-outline-light w-50" %>
+          <%= link_to "Edit", edit_patient_path(@patient), class: "btn btn-outline-secondary w-50" %>
+        </div>
+      </div>
 
-    <div class="text-center mt-4">
-      <%= link_to "Back to Patients", patients_path, class: "btn btn-secondary" %>
+      <!-- Right Side: Patient Details -->
+      <div class="col-md-7 p-4">
+        <% badge_class, icon = case @patient.critical_status
+           when "Mild" then ["bg-warning text-dark", nil]
+           when "Critical" then ["bg-orange text-white", nil]
+           when "Highly Critical" then ["bg-danger text-white", nil]
+           when "Immediate" then ["bg-danger text-white", "⚠️"]
+           else ["bg-secondary text-white", nil]
+        end %>
+
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><strong>Age:</strong> <%= @patient.age %> (<%= @patient.age_group %>)</li>
+          <li class="list-group-item"><strong>Diagnosis:</strong> <%= @patient.diagnosis %></li>
+          <li class="list-group-item">
+            <strong>Critical Status:</strong>
+            <span class="badge <%= badge_class %> px-2 py-1">
+              <%= icon %> <%= @patient.critical_status %>
+            </span>
+          </li>
+          <li class="list-group-item"><strong>Treatment Status:</strong> <%= @patient.treatment_status %></li>
+          <li class="list-group-item"><strong>Living Status:</strong> <%= @patient.living_status %></li>
+        </ul>
+      </div>
+
     </div>
   </div>
 </div>
