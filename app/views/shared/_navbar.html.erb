@@ -1,0 +1,21 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <%= link_to "Hospital Logs", root_path, class: "navbar-brand" %>
+
+    <ul class="navbar-nav">
+      <li><%= link_to "Home", root_path, class: "nav-link #{'active' if current_page?(root_path)}" %></li>
+      <%#<li><%= link_to "About/Video", about_path, class: "nav-link #{'active' if current_page?(about_path)}" %></li>
+      <%# <li><%= link_to "API", api_page_path, class: "nav-link #{'active' if current_page?(api_page_path)}" %></li>
+      <li><%= link_to "GitHub-Repo-Link", "https://github.com/AlexMGarbalyauskas/Hospital_App", class: "nav-link", target: "_blank" %></li>
+    </ul>
+
+    <ul class="navbar-nav right">
+      <%#<% if Current.user %>
+       <%# <li class="nav-link user-email"><%= Current.user.email %></li>
+      <%#<% else %>
+        <%#<li><%= link_to "Sign Up", sign_up_path, class: "nav-link" %></li>
+        <%# <li><%= link_to "Login", sign_in_path, class: "nav-link" %></li>
+     <%#  <% end %>
+    </ul>
+  </div>
+</nav>
