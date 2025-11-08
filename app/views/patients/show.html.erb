@@ -1,0 +1,23 @@
+<div class="container d-flex justify-content-center">
+  <div class="card shadow rounded-4 p-4" style="max-width: 600px; width: 100%;">
+    <div class="text-center">
+      <h2 class="text-primary fw-bold"><%= @patient.name %></h2>
+
+      <% if @patient.profile_pic.attached? %>
+        <%= image_tag @patient.profile_pic, class: "img-thumbnail mt-3", style: "width: 200px; height: auto;" %>
+      <% end %>
+    </div>
+
+    <ul class="list-group list-group-flush mt-4">
+      <li class="list-group-item"><strong>Age:</strong> <%= @patient.age %> (<%= @patient.age_group %>)</li>
+      <li class="list-group-item"><strong>Diagnosis:</strong> <%= @patient.diagnosis %></li>
+      <li class="list-group-item"><strong>Critical Status:</strong> <%= @patient.critical_status %></li>
+      <li class="list-group-item"><strong>Treatment Status:</strong> <%= @patient.treatment_status %></li>
+      <li class="list-group-item"><strong>Living Status:</strong> <%= @patient.living_status %></li>
+    </ul>
+
+    <div class="text-center mt-4">
+      <%= link_to "Back to Patients", patients_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
+</div>

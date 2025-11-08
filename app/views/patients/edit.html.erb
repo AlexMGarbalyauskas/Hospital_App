@@ -1,2 +1,26 @@
-<h1>Patients#edit</h1>
-<p>Find me in app/views/patients/edit.html.erb</p>
+<%= form_with model: @patient, local: true, html: { multipart: true } do |form| %>
+  
+  <%= form.label :living_status, "Living Status" %>
+  <%= form.select :living_status, ["Normal", "Went Away Treated", "Died"], {}, class: "form-select" %>
+
+  
+  <%= form.label :name %>
+  <%= form.text_field :name, class: "form-control" %>
+
+  <%= form.label :age %>
+  <%= form.number_field :age, class: "form-control" %>
+
+  <%= form.label :diagnosis %>
+  <%= form.text_area :diagnosis, class: "form-control" %>
+
+  <%= form.label :critical_status %>
+  <%= form.select :critical_status, ["Mild", "Critical", "Highly Critical", "Immediate"], {}, class: "form-select" %>
+
+  <%= form.label :treatment_status %>
+  <%= form.select :treatment_status, ["Cured", "Not Treated", "Dead"], {}, class: "form-select" %>
+
+  <%= form.label :profile_pic %>
+  <%= form.file_field :profile_pic, class: "form-control" %>
+
+  <%= form.submit class: "btn btn-primary mt-3" %>
+<% end %>

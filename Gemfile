@@ -25,6 +25,7 @@ gem "solid_cable"
 
 gem "bcrypt", "~> 3.1.7"
 gem "bootstrap", "~> 5.3.0"
+gem "activestorage"
 
 
 # Reduces boot times through caching; required in config/boot.rb
@@ -55,3 +56,5 @@ end
 gem "sassc-rails", "~> 2.1"
 
 gem "dartsass-rails", "~> 0.5.1"
+
+gem "image_processing", "~> 1.14"
