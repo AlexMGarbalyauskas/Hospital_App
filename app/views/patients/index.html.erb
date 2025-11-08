@@ -45,12 +45,25 @@
     <% @patients.each_slice(3) do |group| %>
       <div class="row mb-4">
         <% group.each do |patient| %>
+          <% bg_class = case patient.treatment_status
+            when "Dead" then "bg-black text-white"
+            when "Cured" then "bg-success text-white"
+            else "bg-dark text-white"
+          end %>
+
+          <% title_text = case patient.treatment_status
+            when "Dead" then "☠️ Deceased Patient"
+            when "Cured" then "✅ Cured Patient"
+            else patient.name
+          end %>
+
           <div class="col-md-4">
             <%= turbo_frame_tag dom_id(patient) do %>
               <div class="card shadow rounded-4 p-0 h-100">
                 <div class="row g-0 h-100">
-                  <div class="col-5 bg-dark text-white d-flex flex-column align-items-center justify-content-center p-3">
-                    <h5 class="fw-bold text-center mb-3"><%= patient.name %></h5>
+                  <!-- Left Side -->
+                  <div class="col-5 <%= bg_class %> d-flex flex-column align-items-center justify-content-center p-3">
+                    <h5 class="fw-bold text-center mb-1"><%= title_text %></h5>
 
                     <% if patient.profile_pic.attached? %>
                       <%= image_tag patient.profile_pic, class: "img-thumbnail", style: "width: 100px; height: auto;" %>
@@ -58,16 +71,10 @@
                       <%= image_tag "user.png", class: "img-thumbnail", style: "width: 100px; height: auto;" %>
                     <% end %>
 
-                    <!-- Action Buttons -->
                     <div class="d-flex flex-column gap-2 mt-3 w-100">
-                      <%= link_to "👁 Show", patient_path(patient),
-                            class: "btn btn-outline-info btn-sm w-100 text-start px-3" %>
-
-                      <%= link_to "✏️ Edit", edit_patient_path(patient),
-                            class: "btn btn-outline-warning btn-sm w-100 text-start px-3" %>
-
-                      <%= button_to patient_path(patient),
-                            method: :delete,
+                      <%= link_to "👁 Show", patient_path(patient), class: "btn btn-outline-light btn-sm w-100 text-start px-3" %>
+                      <%= link_to "✏️ Edit", edit_patient_path(patient), class: "btn btn-outline-warning btn-sm w-100 text-start px-3" %>
+                      <%= button_to patient_path(patient), method: :delete,
                             form: { data: { turbo_confirm: "Are you sure?" }, class: "d-inline w-100" },
                             class: "btn btn-outline-danger btn-sm w-100 text-start px-3" do %>
                         🗑 Delete
@@ -75,7 +82,9 @@
                     </div>
                   </div>
 
+                  <!-- Right Side -->
                   <div class="col-7 p-3">
+                    <p class="mb-2"><strong>Name:</strong> <%= patient.name %></p>
                     <p class="mb-2"><strong>Age:</strong> <%= patient.age %> (<%= patient.age_group %>)</p>
                     <p class="mb-2"><strong>Diagnosis:</strong> <%= patient.diagnosis %></p>
 
@@ -95,6 +104,15 @@
                     </p>
 
                     <p class="mb-2"><strong>Treatment Status:</strong> <%= patient.treatment_status %></p>
+
+                    <% if patient.treatment_status == "Dead" %>
+                      <p class="mb-2"><strong>Date of Death:</strong> <%= patient.date_of_death %></p>
+                      <p class="mb-2"><strong>Reason of Death:</strong> <%= patient.reason_of_death %></p>
+                    <% elsif patient.treatment_status == "Cured" %>
+                      <p class="mb-2"><strong>Date of Cure:</strong> <%= patient.treatment_date %></p>
+                      <p class="mb-2"><strong>Reason for Cure:</strong> <%= patient.treatment_reason %></p>
+                    <% end %>
+
                     <p class="mb-0"><strong>Living Status:</strong> <%= patient.living_status %></p>
                   </div>
                 </div>

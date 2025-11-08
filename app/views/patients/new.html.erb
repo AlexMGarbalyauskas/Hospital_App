@@ -1,49 +1,80 @@
-<div class="container d-flex justify-content-center mt-5">
-  <div class="card shadow rounded-4 p-4" style="max-width: 600px; width: 100%;">
-    <h2 class="text-primary fw-bold text-center mb-4">
-      <%= @patient.new_record? ? "New Patient" : "Edit Patient" %>
-    </h2>
-
-    <%= form_with model: @patient, local: true, html: { multipart: true } do |form| %>
-      <div class="mb-3">
-        <%= form.label :living_status, "Living Status" %>
-        <%= form.select :living_status, ["Normal", "Went Away Treated", "Died"], {}, class: "form-select" %>
-      </div>
-
-      <div class="mb-3">
-        <%= form.label :name %>
-        <%= form.text_field :name, class: "form-control" %>
-      </div>
-
-      <div class="mb-3">
-        <%= form.label :age %>
-        <%= form.number_field :age, class: "form-control" %>
-      </div>
-
-      <div class="mb-3">
-        <%= form.label :diagnosis %>
-        <%= form.text_area :diagnosis, class: "form-control" %>
-      </div>
-
-      <div class="mb-3">
-        <%= form.label :critical_status %>
-        <%= form.select :critical_status, ["Mild", "Critical", "Highly Critical", "Immediate"], {}, class: "form-select" %>
-      </div>
-
-      <div class="mb-3">
-        <%= form.label :treatment_status %>
-        <%= form.select :treatment_status, ["Cured", "Not Treated", "Dead"], {}, class: "form-select" %>
-      </div>
-
-      <div class="mb-3">
-        <%= form.label :profile_pic %>
-        <%= form.file_field :profile_pic, class: "form-control" %>
-      </div>
-
-      <div class="d-flex justify-content-between mt-4">
-        <%= link_to "Go Back", patients_path, class: "btn btn-outline-secondary" %>
-        <%= form.submit class: "btn btn-primary" %>
-      </div>
-    <% end %>
+<%= form_with model: @patient, local: true, html: { multipart: true } do |form| %>
+  <div class="mb-3">
+    <%= form.label :living_status, "Living Status" %>
+    <%= form.select :living_status, ["Normal", "Went Away Treated", "Died"], {}, class: "form-select" %>
   </div>
-</div>
+
+  <div class="mb-3">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :age %>
+    <%= form.number_field :age, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :diagnosis %>
+    <%= form.text_area :diagnosis, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :critical_status %>
+    <%= form.select :critical_status, ["Mild", "Critical", "Highly Critical", "Immediate"], {}, class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :treatment_status %>
+    <%= form.select :treatment_status, ["Cured", "Not Treated", "Dead"], {}, class: "form-select", id: "treatment_status_select" %>
+  </div>
+
+  <div id="cure_fields" style="display: none;">
+    <div class="mb-3">
+      <%= form.label :treatment_date, "Date of Cure" %>
+      <%= form.date_field :treatment_date, class: "form-control" %>
+    </div>
+    <div class="mb-3">
+      <%= form.label :treatment_reason, "Reason for Cure" %>
+      <%= form.text_area :treatment_reason, class: "form-control" %>
+    </div>
+  </div>
+
+  <div id="death_fields" style="display: none;">
+    <div class="mb-3">
+      <%= form.label :date_of_death, "Date of Death" %>
+      <%= form.date_field :date_of_death, class: "form-control" %>
+    </div>
+    <div class="mb-3">
+      <%= form.label :reason_of_death, "Reason of Death" %>
+      <%= form.text_area :reason_of_death, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :profile_pic %>
+    <%= form.file_field :profile_pic, class: "form-control" %>
+  </div>
+
+  <div class="d-flex justify-content-between mt-4">
+    <%= link_to "Back to Patients", patients_path, class: "btn btn-outline-secondary" %>
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const select = document.getElementById("treatment_status_select");
+    const cureFields = document.getElementById("cure_fields");
+    const deathFields = document.getElementById("death_fields");
+
+    function toggleFields() {
+      const value = select.value;
+      cureFields.style.display = value === "Cured" ? "block" : "none";
+      deathFields.style.display = value === "Dead" ? "block" : "none";
+    }
+
+    select.addEventListener("change", toggleFields);
+    toggleFields(); // initialize on page load
+  });
+</script>

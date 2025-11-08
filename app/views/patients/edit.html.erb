@@ -32,7 +32,31 @@
 
       <div class="mb-3">
         <%= form.label :treatment_status %>
-        <%= form.select :treatment_status, ["Cured", "Not Treated", "Dead"], {}, class: "form-select" %>
+        <%= form.select :treatment_status, ["Cured", "Not Treated", "Dead"], {}, class: "form-select", id: "treatment_status_select" %>
+      </div>
+
+      <!-- Cure Fields -->
+      <div id="cure_fields" style="display: none;">
+        <div class="mb-3">
+          <%= form.label :treatment_date, "Date of Cure" %>
+          <%= form.date_field :treatment_date, class: "form-control" %>
+        </div>
+        <div class="mb-3">
+          <%= form.label :treatment_reason, "Reason for Cure" %>
+          <%= form.text_area :treatment_reason, class: "form-control" %>
+        </div>
+      </div>
+
+      <!-- Death Fields -->
+      <div id="death_fields" style="display: none;">
+        <div class="mb-3">
+          <%= form.label :date_of_death, "Date of Death" %>
+          <%= form.date_field :date_of_death, class: "form-control" %>
+        </div>
+        <div class="mb-3">
+          <%= form.label :reason_of_death, "Reason of Death" %>
+          <%= form.text_area :reason_of_death, class: "form-control" %>
+        </div>
       </div>
 
       <div class="mb-3">
@@ -47,3 +71,23 @@
     <% end %>
   </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const select = document.getElementById("treatment_status_select");
+  const cureFields = document.getElementById("cure_fields");
+  const deathFields = document.getElementById("death_fields");
+
+  function toggleFields() {
+    const value = select.value;
+    cureFields.style.display = (value === "Cured") ? "block" : "none";
+    deathFields.style.display = (value === "Dead") ? "block" : "none";
+  }
+
+  // Initialize fields on page load
+  toggleFields();
+
+  // Listen for changes
+  select.addEventListener("change", toggleFields);
+});
+</script>

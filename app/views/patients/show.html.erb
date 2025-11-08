@@ -1,14 +1,27 @@
-<% content_for :title, "Patient Details" %>
+<% title_text = case @patient.treatment_status
+  when "Dead" then "☠️ Deceased Patient"
+  when "Cured" then "✅ Cured Patient"
+  else "Patient Details"
+end %>
+
+<% content_for :title, title_text %>
+
+<% bg_class = case @patient.treatment_status
+  when "Dead" then "bg-black text-white"
+  when "Cured" then "bg-success text-white"
+  else "bg-dark text-white"
+end %>
 
 <div class="container d-flex justify-content-center mt-5">
   <div class="card shadow rounded-4 p-0" style="max-width: 700px; width: 100%;">
     <div class="row g-0">
-      
-      <!-- Left Side: Image + Name + Buttons -->
-      <div class="col-md-5 bg-dark text-white d-flex flex-column align-items-center justify-content-center p-4">
-        <h2 class="fw-bold mb-3 text-center">
-          <%= @patient.name %>
-        </h2>
+      <!-- Left Side -->
+      <div class="col-md-5 <%= bg_class %> d-flex flex-column align-items-center justify-content-center p-4">
+        <h2 class="fw-bold mb-2 text-center"><%= title_text %></h2>
+        <%# Show name only if not Dead/Cured %>
+        <% unless @patient.treatment_status.in?(["Dead","Cured"]) %>
+          <small class="text-muted text-center mb-3"><%= @patient.name %></small>
+        <% end %>
 
         <% if @patient.profile_pic.attached? %>
           <%= image_tag @patient.profile_pic, class: "img-thumbnail", style: "width: 180px; height: auto;" %>
@@ -19,7 +32,6 @@
         <div class="d-flex flex-column gap-2 mt-4 w-100">
           <%= link_to "↩️ Back", patients_path, class: "btn btn-outline-light btn-sm w-100 text-start px-3" %>
           <%= link_to "✏️ Edit", edit_patient_path(@patient), class: "btn btn-outline-warning btn-sm w-100 text-start px-3" %>
-
           <%= button_to patient_path(@patient),
                 method: :delete,
                 form: { data: { turbo_confirm: "Are you sure you want to delete this patient?" }, class: "d-inline w-100" },
@@ -29,7 +41,7 @@
         </div>
       </div>
 
-      <!-- Right Side: Patient Details -->
+      <!-- Right Side -->
       <div class="col-md-7 p-4">
         <% badge_class, icon = case @patient.critical_status
            when "Mild" then ["bg-warning text-dark", nil]
@@ -40,6 +52,7 @@
         end %>
 
         <ul class="list-group list-group-flush">
+          <li class="list-group-item"><strong>Name:</strong> <%= @patient.name %></li>
           <li class="list-group-item"><strong>Age:</strong> <%= @patient.age %> (<%= @patient.age_group %>)</li>
           <li class="list-group-item"><strong>Diagnosis:</strong> <%= @patient.diagnosis %></li>
           <li class="list-group-item">
@@ -49,10 +62,18 @@
             </span>
           </li>
           <li class="list-group-item"><strong>Treatment Status:</strong> <%= @patient.treatment_status %></li>
+
+          <% if @patient.treatment_status == "Dead" %>
+            <li class="list-group-item"><strong>Date of Death:</strong> <%= @patient.date_of_death %></li>
+            <li class="list-group-item"><strong>Reason of Death:</strong> <%= @patient.reason_of_death %></li>
+          <% elsif @patient.treatment_status == "Cured" %>
+            <li class="list-group-item"><strong>Date of Cure:</strong> <%= @patient.treatment_date %></li>
+            <li class="list-group-item"><strong>Reason for Cure:</strong> <%= @patient.treatment_reason %></li>
+          <% end %>
+
           <li class="list-group-item"><strong>Living Status:</strong> <%= @patient.living_status %></li>
         </ul>
       </div>
-
     </div>
   </div>
 </div>
