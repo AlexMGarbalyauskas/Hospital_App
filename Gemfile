@@ -28,10 +28,11 @@ gem "bcrypt", "~> 3.1.7"
 gem "bootstrap", "~> 5.3.2"
 gem "activestorage"
 gem 'turbo-rails'
-gem "openai"
 gem 'pundit'
 gem 'httparty'
 gem "aws-sdk-s3", require: false
+gem "groupdate"
+gem "propshaft"
 
 
 

@@ -1,5 +1,6 @@
 # config/routes.rb
 Rails.application.routes.draw do
+ 
   root "home#index"
 
   resources :patients do
@@ -8,9 +9,18 @@ Rails.application.routes.draw do
     end
   end
 
+  
+
   # Map / API page
-  get "api", to: "map#api_page", as: :api_page
+ 
   get "map/api", to: "map#api_page", as: :map_api
+  get "api_page", to: "api_page#index", as: :api_page
+
+
+
+
+
+  
   
 
   # Auth routes...

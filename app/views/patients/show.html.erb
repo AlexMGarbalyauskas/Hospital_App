@@ -23,7 +23,6 @@
             🗑 Delete
           <% end %>
           <%= button_tag "Check Current Covid-19 Data", class: "btn btn-outline-primary w-100", data: { bs_toggle: "modal", bs_target: "#apiOptionsModal" } %>
-
         </div>
       </div>
 
@@ -70,44 +69,9 @@
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="apiOptionsModal" tabindex="-1" aria-labelledby="apiOptionsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-
-      <!-- Header -->
-      <div class="modal-header">
-        <h5 class="modal-title" id="apiOptionsModalLabel">API Options</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <!-- Body -->
-      <div class="modal-body">
-
-        <!-- API Option Buttons -->
-        <div class="d-flex gap-2 mb-3">
-          <button class="btn btn-primary" id="btnShowMap">Map API</button>
-          <button class="btn btn-secondary" disabled>API Option 2 (coming soon)</button>
-          <button class="btn btn-secondary" disabled>API Option 3 (coming soon)</button>
-        </div>
-
-        <!-- Container for dynamic API content -->
-        <div id="apiContent" style="min-height:400px;">
-          <!-- Map will be injected here -->
-        </div>
-
-      </div>
-
-      <!-- Footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- Modal -->
+<!-- ================================================== -->
+<!-- Modal for API Options -->
+<!-- ================================================== -->
 <div class="modal fade" id="apiOptionsModal" tabindex="-1" aria-labelledby="apiOptionsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -123,12 +87,11 @@
 
         <!-- API Option Buttons -->
         <div class="d-flex gap-2 mb-3">
-          <button class="btn btn-primary" id="btnShowMap">Map API</button>
-          <button class="btn btn-secondary" disabled>API Option 2 (coming soon)</button>
-          <button class="btn btn-secondary" disabled>API Option 3 (coming soon)</button>
+          <button class="btn btn-primary" id="btnShowMap">🗺 Map API</button>
+          <button class="btn btn-info" id="btnShowCovid">📊 COVID Historical API</button>
         </div>
 
-        <!-- Container for dynamic API content (iframe) -->
+        <!-- Container for dynamic API content -->
         <div id="apiContent" style="min-height:600px; width:100%; display:flex; justify-content:center; align-items:center;">
           <p class="text-muted text-center">Select an API option to view content</p>
         </div>
@@ -144,25 +107,34 @@
   </div>
 </div>
 
+<!-- ================================================== -->
+<!-- JavaScript to handle iframe loading -->
+<!-- ================================================== -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
   const btnMap = document.getElementById("btnShowMap");
+  const btnCovid = document.getElementById("btnShowCovid");
   const apiContent = document.getElementById("apiContent");
 
-  btnMap.addEventListener("click", function() {
-    // Clear old content
+  function loadIframe(url) {
     apiContent.innerHTML = "";
-
-    // Create iframe
     const iframe = document.createElement("iframe");
-    iframe.src = "<%= map_api_path %>"; // Replace with the correct path to your map page
+    iframe.src = url;
     iframe.style.width = "100%";
     iframe.style.height = "600px";
     iframe.style.border = "none";
     iframe.allowFullscreen = true;
-
     apiContent.appendChild(iframe);
+  }
+
+  // Load Map API
+  btnMap.addEventListener("click", function() {
+    loadIframe("<%= map_api_path %>");
+  });
+
+  // Load COVID Historical API
+  btnCovid.addEventListener("click", function() {
+    loadIframe("<%= api_page_path %>");
   });
 });
 </script>
-

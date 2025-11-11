@@ -1,0 +1,2 @@
+module ApiPageHelper
+end

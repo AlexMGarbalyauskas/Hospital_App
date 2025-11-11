@@ -5,4 +5,7 @@ import "controllers"
 // import "bootstrap/dist/js/bootstrap.bundle.min"
 // import "bootstrap-icons"
 // import "bootstrap/dist/css/bootstrap.min.css"
+
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+
+import "chartkick/chart.js"
