@@ -15,6 +15,7 @@ Rails.application.routes.draw do
  
   get "map/api", to: "map#api_page", as: :map_api
   get "api_page", to: "api_page#index", as: :api_page
+  get 'global_covid', to: 'global_covid#index', as: 'global_covid'
 
 
 

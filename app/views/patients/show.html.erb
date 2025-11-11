@@ -89,6 +89,7 @@
         <div class="d-flex gap-2 mb-3">
           <button class="btn btn-primary" id="btnShowMap">🗺 Map API</button>
           <button class="btn btn-info" id="btnShowCovid">📊 COVID Historical API</button>
+          <button class="btn btn-success" id="btnShowGlobalCovid">🌍 Global COVID API</button>
         </div>
 
         <!-- Container for dynamic API content -->
@@ -114,6 +115,7 @@
 document.addEventListener("DOMContentLoaded", function() {
   const btnMap = document.getElementById("btnShowMap");
   const btnCovid = document.getElementById("btnShowCovid");
+  const btnGlobalCovid = document.getElementById("btnShowGlobalCovid");
   const apiContent = document.getElementById("apiContent");
 
   function loadIframe(url) {
@@ -135,6 +137,11 @@ document.addEventListener("DOMContentLoaded", function() {
   // Load COVID Historical API
   btnCovid.addEventListener("click", function() {
     loadIframe("<%= api_page_path %>");
+  });
+
+  // Load Global COVID API
+  btnGlobalCovid.addEventListener("click", function() {
+    loadIframe("<%= global_covid_path %>");
   });
 });
 </script>

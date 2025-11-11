@@ -1,0 +1,52 @@
+<% content_for :title, "Global COVID-19 Statistics" %>
+
+<div class="container mt-5">
+
+  <!-- Page Header -->
+  <h1 class="fw-bold text-primary text-center">Global COVID-19 Statistics</h1>
+  <p class="text-muted fs-5 text-center mb-4">
+    This page shows the latest global COVID-19 statistics using data from disease.sh API.
+  </p>
+
+  <!-- Graph Section -->
+  <h2 class="mt-5 text-primary fw-semibold">Worldwide COVID-19 Overview</h2>
+
+  <% if @covid_data.blank? %>
+    <p class="alert alert-warning text-center">No data available at the moment.</p>
+  <% else %>
+    <div id="globalCovidGraph" style="width:100%; height:600px;"></div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const data = {
+          x: ['Cases', 'Deaths', 'Recovered', 'Active', 'Critical', 'Tests'],
+          y: [
+            <%= @covid_data['cases'] || 0 %>,
+            <%= @covid_data['deaths'] || 0 %>,
+            <%= @covid_data['recovered'] || 0 %>,
+            <%= @covid_data['active'] || 0 %>,
+            <%= @covid_data['critical'] || 0 %>,
+            <%= @covid_data['tests'] || 0 %>
+          ],
+          type: 'bar',
+          marker: { color: ['#007bff', '#dc3545', '#28a745', '#ffc107', '#fd7e14', '#6c757d'] }
+        };
+
+        const layout = {
+          title: 'Global COVID-19 Statistics',
+          yaxis: { title: 'Count' },
+          margin: { t: 50, l: 50, r: 50, b: 50 }
+        };
+
+        Plotly.newPlot('globalCovidGraph', [data], layout);
+      });
+    </script>
+  <% end %>
+
+  <!-- Optional explanatory paragraph -->
+  <p class="text-muted fs-6 mt-3">
+    The chart above provides a quick overview of global COVID-19 numbers, including total cases, deaths, recoveries, active cases, critical cases, and total tests performed worldwide.
+    Data is updated regularly via the disease.sh API.
+  </p>
+
+</div>
