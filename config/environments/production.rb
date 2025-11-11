@@ -12,6 +12,10 @@ Rails.application.configure do
   # Full error reports are disabled.
   config.consider_all_requests_local = false
 
+  # Store uploaded files on Amazon s3 
+  config.active_storage.service = :amazon
+
+
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
 

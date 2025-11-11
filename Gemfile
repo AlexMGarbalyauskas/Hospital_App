@@ -31,6 +31,8 @@ gem 'turbo-rails'
 gem "openai"
 gem 'pundit'
 gem 'httparty'
+gem "aws-sdk-s3", require: false
+
 
 
 
