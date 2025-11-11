@@ -3,4 +3,4 @@
 //= link_tree ../stylesheets
 //= link application.css
 //= link navbar.css
-//= link navbar.css
+
