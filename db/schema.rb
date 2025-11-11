@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_08_204940) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_11_112737) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -50,6 +50,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_08_204940) do
     t.date "treatment_date"
     t.text "treatment_reason"
     t.text "reason_of_death"
+    t.text "treatment_recommendations"
+    t.string "fuzerx_token"
+    t.string "gender"
+    t.boolean "vaccinated"
   end
 
   create_table "users", force: :cascade do |t|

@@ -1,8 +1,15 @@
 <%= form_with model: @patient, local: true, html: { multipart: true } do |form| %>
-  <div class="mb-3">
-    <%= form.label :living_status, "Living Status" %>
-    <%= form.select :living_status, ["Normal", "Went Away Treated", "Died"], {}, class: "form-select" %>
+
+<% if @patient.errors.any? %>
+  <div class="alert alert-danger">
+    <h5><%= pluralize(@patient.errors.count, "error") %> prevented this patient from being saved:</h5>
+    <ul>
+      <% @patient.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
   </div>
+<% end %>
 
   <div class="mb-3">
     <%= form.label :name %>
@@ -12,6 +19,18 @@
   <div class="mb-3">
     <%= form.label :age %>
     <%= form.number_field :age, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :gender %>
+    <%= form.select :gender, ["Male", "Female", "Other"], {}, class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <div class="form-check">
+      <%= form.check_box :vaccinated, { class: "form-check-input" } %>
+      <%= form.label :vaccinated, "Vaccinated", class: "form-check-label" %>
+    </div>
   </div>
 
   <div class="mb-3">

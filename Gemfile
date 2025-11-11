@@ -24,9 +24,14 @@ gem "solid_cable"
 
 
 gem "bcrypt", "~> 3.1.7"
-gem "bootstrap", "~> 5.3.0"
+
+gem "bootstrap", "~> 5.3.2"
 gem "activestorage"
 gem 'turbo-rails'
+gem "openai"
+gem 'pundit'
+gem 'httparty'
+
 
 
 # Reduces boot times through caching; required in config/boot.rb
@@ -59,3 +64,5 @@ gem "sassc-rails", "~> 2.1"
 gem "dartsass-rails", "~> 0.5.1"
 
 gem "image_processing", "~> 1.14"
+
+gem "dotenv-rails", "~> 3.1"

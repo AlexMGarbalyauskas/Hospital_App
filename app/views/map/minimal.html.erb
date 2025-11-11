@@ -1,0 +1,15 @@
+<div class="position-relative" style="height:500px; width:100%;">
+  <gmp-map id="gmpMap"
+           style="height:100%; width:100%;"
+           center="20,0"
+           zoom="2"
+           data-vaccine-data='<%= json_escape(@vaccine_map.to_json) %>'>
+  </gmp-map>
+
+  <gmp-advanced-marker id="gmpMarker"></gmp-advanced-marker>
+  <gmpx-place-picker id="gmpPlacePicker" style="display:none;"></gmpx-place-picker>
+</div>
+
+<script>
+  // Your existing map initialization code here (same as in map_api page)
+</script>

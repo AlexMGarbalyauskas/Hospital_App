@@ -2,10 +2,11 @@
 
 <div class="container mt-4">
   <div class="mb-4">
-    <h1 class="display-5 fw-bold text-primary">Patient Management</h1>
+    <h1 class="display-5 fw-bold text-primary">Covid Patient Management</h1>
     <p class="lead text-muted">Search, view, and manage all registered patients in the system.</p>
   </div>
 
+  <!-- Top Controls: New & Search -->
   <div class="d-flex flex-wrap align-items-center gap-3 w-100 mb-3">
     <%= link_to "New Patient", new_patient_path, class: "btn btn-success btn-sm px-4" %>
 
@@ -41,6 +42,17 @@
     </div>
   <% end %>
 
+  <!-- Mass Delete Button -->
+  <div class="d-flex justify-content-end mb-2">
+    <%= button_to "Delete Selected", delete_multiple_patients_path,
+          method: :delete,
+          params: { patient_ids: [] }, # JS will fill selected IDs
+          form: { id: "mass_delete_button_form" },
+          data: { confirm: "Are you sure you want to delete selected patients?" },
+          class: "btn btn-danger btn-sm" %>
+  </div>
+
+  <!-- Patients Grid -->
   <div class="row">
     <% @patients.each_slice(3) do |group| %>
       <div class="row mb-4">
@@ -51,19 +63,21 @@
             else "bg-dark text-white"
           end %>
 
-          <% title_text = case patient.treatment_status
-            when "Dead" then "☠️ Deceased Patient"
-            when "Cured" then "✅ Cured Patient"
-            else patient.name
-          end %>
-
           <div class="col-md-4">
             <%= turbo_frame_tag dom_id(patient) do %>
-              <div class="card shadow rounded-4 p-0 h-100">
+              <div class="card shadow rounded-4 p-0 h-100 position-relative">
+
+                <!-- Checkbox top-right -->
+                <div class="form-check position-absolute top-0 end-0 m-2">
+                  <%= check_box_tag "patient_select", patient.id, false, class: "form-check-input patient-checkbox" %>
+                </div>
+
                 <div class="row g-0 h-100">
                   <!-- Left Side -->
                   <div class="col-5 <%= bg_class %> d-flex flex-column align-items-center justify-content-center p-3">
-                    <h5 class="fw-bold text-center mb-1"><%= title_text %></h5>
+                    <h5 class="fw-bold text-center mb-1">
+                      <%= patient.treatment_status == "Dead" ? "☠️ Deceased Patient" : (patient.treatment_status == "Cured" ? "✅ Cured Patient" : patient.name) %>
+                    </h5>
 
                     <% if patient.profile_pic.attached? %>
                       <%= image_tag patient.profile_pic, class: "img-thumbnail", style: "width: 100px; height: auto;" %>
@@ -82,39 +96,43 @@
                     </div>
                   </div>
 
-                  <!-- Right Side -->
-                  <div class="col-7 p-3">
-                    <p class="mb-2"><strong>Name:</strong> <%= patient.name %></p>
-                    <p class="mb-2"><strong>Age:</strong> <%= patient.age %> (<%= patient.age_group %>)</p>
-                    <p class="mb-2"><strong>Diagnosis:</strong> <%= patient.diagnosis %></p>
+                  <!-- Right Side: Patient Details -->
+                  <!-- Right Side: Patient Details -->
+<div class="col-7 p-3">
+  <p class="mb-1"><strong>Name:</strong> <%= patient.name %></p>
+  <p class="mb-1"><strong>Age:</strong> <%= patient.age %> (<%= patient.age_group %>)</p>
+  <p class="mb-1"><strong>Gender:</strong> <%= patient.gender %></p>
+  <p class="mb-1"><strong>Vaccinated:</strong> <%= patient.vaccinated ? "Yes" : "No" %></p>
+  <p class="mb-1"><strong>Diagnosis:</strong> <%= patient.diagnosis %></p>
 
-                    <% badge_class, icon = case patient.critical_status
-                      when "Mild" then ["bg-warning text-dark", nil]
-                      when "Critical" then ["bg-orange text-white", nil]
-                      when "Highly Critical" then ["bg-danger text-white", nil]
-                      when "Immediate" then ["bg-danger text-white", "⚠️"]
-                      else ["bg-secondary text-white", nil]
-                    end %>
+  <% badge_class, icon = case patient.critical_status
+    when "Mild" then ["bg-warning text-dark", nil]
+    when "Critical" then ["bg-orange text-white", "⚠️"]
+    when "Highly Critical" then ["bg-danger text-white", "⚠️"]
+    when "Immediate" then ["bg-danger text-white", "⚠️"]
+    else ["bg-secondary text-white", nil]
+  end %>
 
-                    <p class="mb-2">
-                      <strong>Critical Status:</strong>
-                      <span class="badge <%= badge_class %> px-2 py-1">
-                        <%= icon %> <%= patient.critical_status %>
-                      </span>
-                    </p>
+  <p class="mb-1">
+    <strong>Critical Status:</strong>
+    <span class="badge <%= badge_class %> px-2 py-1">
+      <%= icon %> <%= patient.critical_status %>
+    </span>
+  </p>
 
-                    <p class="mb-2"><strong>Treatment Status:</strong> <%= patient.treatment_status %></p>
+  <p class="mb-1"><strong>Treatment Status:</strong> <%= patient.treatment_status %></p>
 
-                    <% if patient.treatment_status == "Dead" %>
-                      <p class="mb-2"><strong>Date of Death:</strong> <%= patient.date_of_death %></p>
-                      <p class="mb-2"><strong>Reason of Death:</strong> <%= patient.reason_of_death %></p>
-                    <% elsif patient.treatment_status == "Cured" %>
-                      <p class="mb-2"><strong>Date of Cure:</strong> <%= patient.treatment_date %></p>
-                      <p class="mb-2"><strong>Reason for Cure:</strong> <%= patient.treatment_reason %></p>
-                    <% end %>
+  <% if patient.treatment_status == "Dead" %>
+    <p class="mb-1"><strong>Date of Death:</strong> <%= patient.date_of_death %></p>
+    <p class="mb-1"><strong>Reason of Death:</strong> <%= patient.reason_of_death %></p>
+  <% elsif patient.treatment_status == "Cured" %>
+    <p class="mb-1"><strong>Date of Cure:</strong> <%= patient.treatment_date %></p>
+    <p class="mb-1"><strong>Reason for Cure:</strong> <%= patient.treatment_reason %></p>
+  <% end %>
 
-                    <p class="mb-0"><strong>Living Status:</strong> <%= patient.living_status %></p>
-                  </div>
+  <p class="mb-1"><strong>Living Status:</strong> <%= patient.living_status %></p>
+</div>
+
                 </div>
               </div>
             <% end %>
@@ -124,3 +142,35 @@
     <% end %>
   </div>
 </div>
+
+<!-- JavaScript to populate selected IDs -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const buttonForm = document.querySelector("#mass_delete_button_form");
+    const checkboxes = document.querySelectorAll(".patient-checkbox");
+
+    buttonForm.addEventListener("submit", function(e) {
+      const selectedIds = Array.from(checkboxes)
+                               .filter(cb => cb.checked)
+                               .map(cb => cb.value);
+
+      if (selectedIds.length === 0) {
+        e.preventDefault();
+        alert("Please select at least one patient to delete.");
+        return;
+      }
+
+      // Clear previous hidden inputs
+      buttonForm.querySelectorAll('input[name="patient_ids[]"]').forEach(el => el.remove());
+
+      // Add hidden inputs for selected IDs
+      selectedIds.forEach(id => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "patient_ids[]";
+        input.value = id;
+        buttonForm.appendChild(input);
+      });
+    });
+  });
+</script>

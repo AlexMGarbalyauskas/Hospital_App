@@ -1,66 +1,56 @@
-<% title_text = case @patient.treatment_status
-  when "Dead" then "☠️ Deceased Patient"
-  when "Cured" then "✅ Cured Patient"
-  else "Patient Details"
-end %>
+<% content_for :title, "Patient Details" %>
 
-<% content_for :title, title_text %>
-
-<% bg_class = case @patient.treatment_status
-  when "Dead" then "bg-black text-white"
-  when "Cured" then "bg-success text-white"
-  else "bg-dark text-white"
-end %>
-
-<div class="container d-flex justify-content-center mt-5">
-  <div class="card shadow rounded-4 p-0" style="max-width: 700px; width: 100%;">
+<div class="container mt-5">
+  <div class="card shadow rounded-4 p-0" style="max-width: 900px; width: 100%;">
     <div class="row g-0">
-      <!-- Left Side -->
-      <div class="col-md-5 <%= bg_class %> d-flex flex-column align-items-center justify-content-center p-4">
-        <h2 class="fw-bold mb-2 text-center"><%= title_text %></h2>
-        <%# Show name only if not Dead/Cured %>
-        <% unless @patient.treatment_status.in?(["Dead","Cured"]) %>
-          <small class="text-muted text-center mb-3"><%= @patient.name %></small>
-        <% end %>
+
+      <!-- Left Side: Patient Info & Actions -->
+      <div class="col-md-4 <%= @patient.treatment_status == "Dead" ? "bg-black text-white" : @patient.treatment_status == "Cured" ? "bg-success text-white" : "bg-dark text-white" %> d-flex flex-column align-items-center justify-content-center p-4">
+        <h2 class="fw-bold text-center mb-3">
+          <%= @patient.treatment_status == "Dead" ? "☠️ Deceased Patient" : @patient.treatment_status == "Cured" ? "✅ Cured Patient" : "Patient Details" %>
+        </h2>
 
         <% if @patient.profile_pic.attached? %>
-          <%= image_tag @patient.profile_pic, class: "img-thumbnail", style: "width: 180px; height: auto;" %>
+          <%= image_tag @patient.profile_pic, class: "img-thumbnail", style: "width: 180px;" %>
         <% else %>
-          <%= image_tag "user.png", class: "img-thumbnail", style: "width: 180px; height: auto;" %>
+          <%= image_tag "user.png", class: "img-thumbnail", style: "width: 180px;" %>
         <% end %>
 
         <div class="d-flex flex-column gap-2 mt-4 w-100">
-          <%= link_to "↩️ Back", patients_path, class: "btn btn-outline-light btn-sm w-100 text-start px-3" %>
-          <%= link_to "✏️ Edit", edit_patient_path(@patient), class: "btn btn-outline-warning btn-sm w-100 text-start px-3" %>
-          <%= button_to patient_path(@patient),
-                method: :delete,
-                form: { data: { turbo_confirm: "Are you sure you want to delete this patient?" }, class: "d-inline w-100" },
-                class: "btn btn-outline-danger btn-sm w-100 text-start px-3" do %>
+          <%= link_to "↩️ Back", patients_path, class: "btn btn-outline-light w-100" %>
+          <%= link_to "✏️ Edit", edit_patient_path(@patient), class: "btn btn-outline-warning w-100" %>
+          <%= button_to patient_path(@patient), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-outline-danger w-100" do %>
             🗑 Delete
           <% end %>
+          <%= button_tag "Check Current Covid-19 Data", class: "btn btn-outline-primary w-100", data: { bs_toggle: "modal", bs_target: "#apiOptionsModal" } %>
+
         </div>
       </div>
 
-      <!-- Right Side -->
-      <div class="col-md-7 p-4">
-        <% badge_class, icon = case @patient.critical_status
-           when "Mild" then ["bg-warning text-dark", nil]
-           when "Critical" then ["bg-orange text-white", nil]
-           when "Highly Critical" then ["bg-danger text-white", nil]
-           when "Immediate" then ["bg-danger text-white", "⚠️"]
-           else ["bg-secondary text-white", nil]
-        end %>
-
-        <ul class="list-group list-group-flush">
+      <!-- Right Side: Detailed Patient Data -->
+      <div class="col-md-8 p-4">
+        <ul class="list-group list-group-flush mb-3">
           <li class="list-group-item"><strong>Name:</strong> <%= @patient.name %></li>
           <li class="list-group-item"><strong>Age:</strong> <%= @patient.age %> (<%= @patient.age_group %>)</li>
+          <li class="list-group-item"><strong>Gender:</strong> <%= @patient.gender %></li>
+          <li class="list-group-item"><strong>Vaccinated:</strong> <%= @patient.vaccinated ? "Yes" : "No" %></li>
           <li class="list-group-item"><strong>Diagnosis:</strong> <%= @patient.diagnosis %></li>
+
+          <% badge_class, icon = case @patient.critical_status
+            when "Mild" then ["bg-warning text-dark", nil]
+            when "Critical" then ["bg-orange text-white", "⚠️"]
+            when "Highly Critical" then ["bg-danger text-white", "⚠️"]
+            when "Immediate" then ["bg-danger text-white", "⚠️"]
+            else ["bg-secondary text-white", nil]
+          end %>
+
           <li class="list-group-item">
             <strong>Critical Status:</strong>
             <span class="badge <%= badge_class %> px-2 py-1">
               <%= icon %> <%= @patient.critical_status %>
             </span>
           </li>
+
           <li class="list-group-item"><strong>Treatment Status:</strong> <%= @patient.treatment_status %></li>
 
           <% if @patient.treatment_status == "Dead" %>
@@ -72,8 +62,107 @@ end %>
           <% end %>
 
           <li class="list-group-item"><strong>Living Status:</strong> <%= @patient.living_status %></li>
+          <li class="list-group-item"><strong>Profile Picture Attached:</strong> <%= @patient.profile_pic.attached? ? "Yes" : "No" %></li>
         </ul>
       </div>
+
     </div>
   </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="apiOptionsModal" tabindex="-1" aria-labelledby="apiOptionsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="apiOptionsModalLabel">API Options</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+
+        <!-- API Option Buttons -->
+        <div class="d-flex gap-2 mb-3">
+          <button class="btn btn-primary" id="btnShowMap">Map API</button>
+          <button class="btn btn-secondary" disabled>API Option 2 (coming soon)</button>
+          <button class="btn btn-secondary" disabled>API Option 3 (coming soon)</button>
+        </div>
+
+        <!-- Container for dynamic API content -->
+        <div id="apiContent" style="min-height:400px;">
+          <!-- Map will be injected here -->
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="apiOptionsModal" tabindex="-1" aria-labelledby="apiOptionsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="apiOptionsModalLabel">API Options</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+
+        <!-- API Option Buttons -->
+        <div class="d-flex gap-2 mb-3">
+          <button class="btn btn-primary" id="btnShowMap">Map API</button>
+          <button class="btn btn-secondary" disabled>API Option 2 (coming soon)</button>
+          <button class="btn btn-secondary" disabled>API Option 3 (coming soon)</button>
+        </div>
+
+        <!-- Container for dynamic API content (iframe) -->
+        <div id="apiContent" style="min-height:600px; width:100%; display:flex; justify-content:center; align-items:center;">
+          <p class="text-muted text-center">Select an API option to view content</p>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const btnMap = document.getElementById("btnShowMap");
+  const apiContent = document.getElementById("apiContent");
+
+  btnMap.addEventListener("click", function() {
+    // Clear old content
+    apiContent.innerHTML = "";
+
+    // Create iframe
+    const iframe = document.createElement("iframe");
+    iframe.src = "<%= map_api_path %>"; // Replace with the correct path to your map page
+    iframe.style.width = "100%";
+    iframe.style.height = "600px";
+    iframe.style.border = "none";
+    iframe.allowFullscreen = true;
+
+    apiContent.appendChild(iframe);
+  });
+});
+</script>
+

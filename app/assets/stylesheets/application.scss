@@ -1,8 +1,12 @@
+/* Bootstrap is loaded via CDN, so no need to import it here unless customizing */
 @import "bootstrap";
+
+
+
 
 /* Custom badge colors for critical status */
 .bg-orange {
-  background-color: #fd7e14; /* Bootstrap's orange tone */
+  background-color: #fd7e14;
 }
 
 .badge {
