@@ -1,42 +1,32 @@
-class PostsController < ApplicationController
-  before_action :authenticate_user!
-
-  def index
-    @posts = policy_scope(Post)
+class PostPolicy < ApplicationPolicy
+  # all methods inherit initialize(user, record) from ApplicationPolicy
+  def index?
+    true
   end
 
-  def show
-    @post = Post.find(params[:id])
-    authorize @post
+  def show?
+    true
   end
 
-  def create
-    @post = Post.new(post_params)
-    authorize @post
-    @post.user = current_user
+  def create?
+    user.present?
+  end
 
-    if @post.save
-      redirect_to @post
-    else
-      render :new
+  def update?
+    user.admin? || user == record.user
+  end
+
+  def destroy?
+    user.admin? || user == record.user
+  end
+
+  class Scope < Scope
+    def resolve
+      if user.admin?
+        scope.all
+      else
+        scope.where(user: user)
+      end
     end
-  end
-
-  def update
-    @post = Post.find(params[:id])
-    authorize @post
-
-    if @post.update(post_params)
-      redirect_to @post
-    else
-      render :edit
-    end
-  end
-
-  def destroy
-    @post = Post.find(params[:id])
-    authorize @post
-    @post.destroy
-    redirect_to posts_path
   end
 end
