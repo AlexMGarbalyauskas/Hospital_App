@@ -1,11 +1,20 @@
+#local storage
 local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-# config/storage.yml
+
+# config/storage.yml Amazon storage 
 amazon:
   service: S3
   access_key_id: <%= ENV["AWS_ACCESS_KEY_ID"] %>
   secret_access_key: <%= ENV["AWS_SECRET_ACCESS_KEY"] %>
   region: <%= ENV["AWS_REGION"] %>
   bucket: <%= ENV["AWS_BUCKET"] %>
+
+
+#for tests 
+test:
+  service: Disk
+  root: <%= Rails.root.join("tmp/storage") %>
+
