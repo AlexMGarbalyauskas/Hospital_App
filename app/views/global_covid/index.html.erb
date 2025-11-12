@@ -1,23 +1,62 @@
+<%# app/views/global_covid/index.html.erb %>
+
+
+
+<!-- Purpose of file
+This view renders a page showing 
+the latest global COVID-19 statistics.
+It uses data passed from 
+the controller (@covid_data) and visualizes it
+with a Plotly bar chart. 
+The data comes from the disease.sh API.-->
+
+
+
+
 <% content_for :title, "Global COVID-19 Statistics" %>
 
 <div class="container mt-5">
 
-  <!-- Page Header -->
+
+<!-- 1 -->
+  <!-- Page Header and paragraph-->
   <h1 class="fw-bold text-primary text-center">Global COVID-19 Statistics</h1>
+  
   <p class="text-muted fs-5 text-center mb-4">
     This page shows the latest global COVID-19 statistics using data from disease.sh API.
   </p>
 
+
+
+
+<!-- 2 -->
   <!-- Graph Section -->
   <h2 class="mt-5 text-primary fw-semibold">Worldwide COVID-19 Overview</h2>
 
+
+
+
+  <!-- If no data is available, show a warning -->
   <% if @covid_data.blank? %>
     <p class="alert alert-warning text-center">No data available at the moment.</p>
+ 
   <% else %>
+
+    <!-- Chart container -->
     <div id="globalCovidGraph" style="width:100%; height:600px;"></div>
 
+
+
+
+
+
+
+
+<!-- 3 -->
     <script>
+      // Wait until DOM is loaded before rendering chart
       document.addEventListener("DOMContentLoaded", function() {
+        // Define data for the bar chart using instance variable values
         const data = {
           x: ['Cases', 'Deaths', 'Recovered', 'Active', 'Critical', 'Tests'],
           y: [
@@ -29,24 +68,50 @@
             <%= @covid_data['tests'] || 0 %>
           ],
           type: 'bar',
-          marker: { color: ['#007bff', '#dc3545', '#28a745', '#ffc107', '#fd7e14', '#6c757d'] }
+          marker: { 
+            color: [
+              '#007bff', // Cases blue
+              '#dc3545', // Deaths red
+              '#28a745', // Recovered green
+              '#ffc107', // Active yellow
+              '#fd7e14', // Critical orange
+              '#6c757d'  // Tests gray
+            ] 
+          }
         };
 
+
+
+
+        // Charting the layout configuration
         const layout = {
           title: 'Global COVID-19 Statistics',
           yaxis: { title: 'Count' },
           margin: { t: 50, l: 50, r: 50, b: 50 }
         };
 
+
+
+        // Rendering the Plotly chart inside the div
         Plotly.newPlot('globalCovidGraph', [data], layout);
       });
     </script>
+
+
+
   <% end %>
 
-  <!-- Optional explanatory paragraph -->
+
+
+
+<!-- 4 -->
+  <!-- Explanatory paragraph -->
   <p class="text-muted fs-6 mt-3">
     The chart above provides a quick overview of global COVID-19 numbers, including total cases, deaths, recoveries, active cases, critical cases, and total tests performed worldwide.
     Data is updated regularly via the disease.sh API.
   </p>
 
-</div>
+
+
+
+</div> 

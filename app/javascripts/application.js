@@ -1,11 +1,12 @@
+// import and configure the Turbo library 
+// for handling navigation and page updates
 import "@hotwired/turbo-rails"
+
+// import the Stimulus library
 import "controllers"
 
-// Optional: If you installed Bootstrap via npm/yarn
-// import "bootstrap/dist/js/bootstrap.bundle.min"
-// import "bootstrap-icons"
-// import "bootstrap/dist/css/bootstrap.min.css"
-
+// import Bootstrap's JavaScript components
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
+// import Chartkick for creating charts
 import "chartkick/chart.js"

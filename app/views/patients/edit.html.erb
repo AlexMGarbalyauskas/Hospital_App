@@ -1,5 +1,19 @@
+<%# app/views/patients/edit.html.erb%>
+
+
+
+<%# this file is the frontend to allow 
+manipulation of patient details following update policy 
+of CRUD%>
+
+
+
+<%# uses bootstap for styling in classes tag included in
+application.html.erb in layouts folder, gem also %>
 <div class="container d-flex justify-content-center mt-5">
   <div class="card shadow rounded-4 p-4" style="max-width: 600px; width: 100%;">
+    
+    
     <h2 class="text-primary fw-bold text-center mb-4">
       <%= @patient.new_record? ? "New Patient" : "Edit Patient" %>
     </h2>
@@ -16,11 +30,17 @@
         </div>
       <% end %>
 
+
+
+
       <!-- Living Status -->
       <div class="mb-3">
         <%= form.label :living_status, "Living Status" %>
         <%= form.select :living_status, ["Normal", "Went Away Treated", "Died"], {}, class: "form-select" %>
       </div>
+
+
+
 
       <!-- Name -->
       <div class="mb-3">
@@ -28,11 +48,17 @@
         <%= form.text_field :name, class: "form-control" %>
       </div>
 
+
+
+
       <!-- Age -->
       <div class="mb-3">
         <%= form.label :age %>
         <%= form.number_field :age, class: "form-control" %>
       </div>
+
+
+
 
       <!-- Gender -->
       <div class="mb-3">
@@ -40,7 +66,11 @@
         <%= form.select :gender, ["Male", "Female", "Other"], {}, class: "form-select" %>
       </div>
 
+
+
+
       <!-- Vaccinated -->
+      <!-- boolean true or false in DB -->
       <div class="mb-3">
         <div class="form-check">
           <%= form.check_box :vaccinated, { class: "form-check-input" } %>
@@ -48,25 +78,43 @@
         </div>
       </div>
 
+
+
+
       <!-- Diagnosis -->
       <div class="mb-3">
         <%= form.label :diagnosis %>
         <%= form.text_area :diagnosis, class: "form-control" %>
       </div>
 
+
+
+
       <!-- Critical Status -->
+      <!-- includes warning signs to showcase who is in more need
+      --> 
       <div class="mb-3">
         <%= form.label :critical_status %>
         <%= form.select :critical_status, ["Mild", "Critical", "Highly Critical", "Immediate"], {}, class: "form-select" %>
       </div>
 
+
+
+
+
       <!-- Treatment Status -->
+      <!-- if status is changed the background
+      and title appears to showcase if they are dead or cured -->
       <div class="mb-3">
         <%= form.label :treatment_status %>
         <%= form.select :treatment_status, ["Cured", "Not Treated", "Dead"], {}, class: "form-select", id: "treatment_status_select" %>
       </div>
 
+
+
+
       <!-- Cure Fields -->
+      <!-- explain reason of curement and date -->
       <div id="cure_fields" style="display: none;">
         <div class="mb-3">
           <%= form.label :treatment_date, "Date of Cure" %>
@@ -78,7 +126,13 @@
         </div>
       </div>
 
+
+
+
+
       <!-- Death Fields -->
+      <!-- explains when user died/date and reason
+      of death -->
       <div id="death_fields" style="display: none;">
         <div class="mb-3">
           <%= form.label :date_of_death, "Date of Death" %>
@@ -90,14 +144,27 @@
         </div>
       </div>
 
+
+
+
+
+
       <!-- Profile Picture -->
+      <!-- profile pic is
+      saved locally via activeStorage and 
+      on AWS bucket/user in deployment -->
       <div class="mb-3">
         <%= form.label :profile_pic %>
         <%= form.file_field :profile_pic, class: "form-control" %>
       </div>
 
 
-      <!-- Buttons -->
+
+
+
+
+
+      <!-- Button to return -->
       <div class="d-flex justify-content-between mt-4">
         <%= link_to "Back to Patients", patients_path, class: "btn btn-outline-secondary" %>
         <%= form.submit class: "btn btn-primary" %>
@@ -105,6 +172,11 @@
     <% end %>
   </div>
 </div>
+
+
+
+
+
 
 <!-- JavaScript to toggle Cure / Death fields -->
 <script>
@@ -119,8 +191,12 @@ document.addEventListener("DOMContentLoaded", function() {
     deathFields.style.display = (value === "Dead") ? "block" : "none";
   }
 
+
+
   // Initialize fields on page load
   toggleFields();
+
+
 
   // Listen for changes
   select.addEventListener("change", toggleFields);

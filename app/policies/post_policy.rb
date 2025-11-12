@@ -1,3 +1,9 @@
+# app/policies/post_policy.rb
+
+
+# used to authorize actions on Post model like 
+#viewing, creating, updating, and deleting posts
+
 class PostPolicy < ApplicationPolicy
   # all methods inherit initialize(user, record) from ApplicationPolicy
   def index?

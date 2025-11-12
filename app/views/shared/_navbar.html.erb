@@ -1,17 +1,30 @@
+
+<!-- navbar at the top of the page 
+this file gets rendered in layouts/application.html.erb
+links to other views/ page files -->
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
   <div class="container-fluid">
     
+
+
     <!-- Brand Title -->
     <%= link_to "Hospital Logs", root_path, class: "navbar-brand fw-bold text-primary" %>
+
+
 
     <!-- Mobile Toggle Button -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
   
+
+
     <!-- Navbar Links -->
     <div class="collapse navbar-collapse" id="navbarNav">
       
+
+
       <!-- Left Navigation -->
       <ul class="navbar-nav">
         <li class="nav-item">
@@ -28,6 +41,9 @@
         </li>
 
       </ul>
+
+
+
 
       <!-- Right Navigation -->
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -52,6 +68,8 @@
           </li>
         <% end %>
       </ul>
+
+
 
     </div>
   </div>

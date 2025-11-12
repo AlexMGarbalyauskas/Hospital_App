@@ -1,20 +1,63 @@
 <!-- app/views/api_page/index.html.erb -->
 
+
+
+<!-- 
+  Purpose of file
+  This view renders the COVID-19 historical data page. 
+  It displays a heading, description, 
+  and a Plotly chart showing daily new cases 
+  using data 
+  passed from the ApiPageController.
+-->
+
+
+
+
+<!-- 1 -->
+<!-- Page heading -->
 <h1 class="fw-bold display-5 text-primary mb-4">Global COVID-19 Historical Data</h1>
 
+
+
+
+
+<!-- 2 -->
+<!-- Introductory description -->
 <p class="text-muted fs-5 mb-4">
   This page demonstrates historical global COVID-19 case trends using data from Disease.sh API.
 </p>
 
+
+
+
+
+
+<!-- 3 -->
+<!-- Card container for the chart -->
 <div class="card shadow rounded-4 p-4">
+  <!-- Placeholder div where Plotly will render the chart -->
   <div id="covid_plot" style="height: 500px;"></div>
 </div>
 
+
+
+
+
+
+
+<!-- 4 -->
+<!-- Plotly chart rendering script -->
 <script>
+  // Wait until the DOM is fully loaded before running chart code
   document.addEventListener("DOMContentLoaded", function () {
+    // Extract dates from @daily_new_cases (keys of the hash)
     const dates = [<%= raw @daily_new_cases.map { |d, _| "\"#{d}\"" }.join(", ") %>];
+    
+    // Extract case counts from @daily_new_cases (values of the hash)
     const cases = [<%= raw @daily_new_cases.map { |_, c| c }.join(", ") %>];
 
+    // Define the Plotly trace (line + markers chart)
     const trace = {
       x: dates,
       y: cases,
@@ -25,6 +68,7 @@
       marker: { color: 'rgba(0, 123, 255, 0.8)' }
     };
 
+    // Configure chart layout (titles, margins, axis labels)
     const layout = {
       title: 'Global COVID-19 Daily New Cases',
       xaxis: { title: 'Date' },
@@ -32,6 +76,7 @@
       margin: { l: 60, r: 30, t: 60, b: 80 }
     };
 
+    // Render the chart into the covid_plot div
     Plotly.newPlot('covid_plot', [trace], layout);
   });
 </script>

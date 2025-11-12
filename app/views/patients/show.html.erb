@@ -1,8 +1,27 @@
+<!-- views/patients/show.html.erb --> 
+
+
+
+<!-- This file is for displaying patient data 
+includes a button to check out the API used appears as a
+modal pop up screen with 3 APIs to view for 
+doctor info -->
+
+
+
+
 <% content_for :title, "Patient Details" %>
+
+
+
 
 <div class="container mt-5">
   <div class="card shadow rounded-4 p-0" style="max-width: 900px; width: 100%;">
     <div class="row g-0">
+
+
+
+
 
       <!-- Left Side: Patient Info & Actions -->
       <div class="col-md-4 <%= @patient.treatment_status == "Dead" ? "bg-black text-white" : @patient.treatment_status == "Cured" ? "bg-success text-white" : "bg-dark text-white" %> d-flex flex-column align-items-center justify-content-center p-4">
@@ -10,12 +29,20 @@
           <%= @patient.treatment_status == "Dead" ? "☠️ Deceased Patient" : @patient.treatment_status == "Cured" ? "✅ Cured Patient" : "Patient Details" %>
         </h2>
 
+
+
+
+        <!-- profile pic -->
         <% if @patient.profile_pic.attached? %>
           <%= image_tag @patient.profile_pic, class: "img-thumbnail", style: "width: 180px;" %>
         <% else %>
           <%= image_tag "user.png", class: "img-thumbnail", style: "width: 180px;" %>
         <% end %>
 
+
+
+
+        <!-- btns to go back to index, edit, delete and api -->
         <div class="d-flex flex-column gap-2 mt-4 w-100">
           <%= link_to "↩️ Back", patients_path, class: "btn btn-outline-light w-100" %>
           <%= link_to "✏️ Edit", edit_patient_path(@patient), class: "btn btn-outline-warning w-100" %>
@@ -25,6 +52,11 @@
           <%= button_tag "Check Current Covid-19 Data", class: "btn btn-outline-primary w-100", data: { bs_toggle: "modal", bs_target: "#apiOptionsModal" } %>
         </div>
       </div>
+
+
+
+
+
 
       <!-- Right Side: Detailed Patient Data -->
       <div class="col-md-8 p-4">
@@ -43,6 +75,9 @@
             else ["bg-secondary text-white", nil]
           end %>
 
+
+
+
           <li class="list-group-item">
             <strong>Critical Status:</strong>
             <span class="badge <%= badge_class %> px-2 py-1">
@@ -50,7 +85,13 @@
             </span>
           </li>
 
+
+
+
           <li class="list-group-item"><strong>Treatment Status:</strong> <%= @patient.treatment_status %></li>
+
+
+
 
           <% if @patient.treatment_status == "Dead" %>
             <li class="list-group-item"><strong>Date of Death:</strong> <%= @patient.date_of_death %></li>
@@ -69,12 +110,21 @@
   </div>
 </div>
 
-<!-- ================================================== -->
-<!-- Modal for API Options -->
-<!-- ================================================== -->
+
+
+
+
+
+
+
+<!-- Modal for API Options  a pop up 
+after view data btn is clicked to check out
+all the api that is used -->
 <div class="modal fade" id="apiOptionsModal" tabindex="-1" aria-labelledby="apiOptionsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
+
+
 
       <!-- Header -->
       <div class="modal-header">
@@ -82,8 +132,10 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
+
       <!-- Body -->
       <div class="modal-body">
+
 
         <!-- API Option Buttons -->
         <div class="d-flex gap-2 mb-3">
@@ -92,12 +144,14 @@
           <button class="btn btn-success" id="btnShowGlobalCovid">🌍 Global COVID API</button>
         </div>
 
+
         <!-- Container for dynamic API content -->
         <div id="apiContent" style="min-height:600px; width:100%; display:flex; justify-content:center; align-items:center;">
           <p class="text-muted text-center">Select an API option to view content</p>
         </div>
 
       </div>
+
 
       <!-- Footer -->
       <div class="modal-footer">
@@ -108,9 +162,12 @@
   </div>
 </div>
 
-<!-- ================================================== -->
-<!-- JavaScript to handle iframe loading -->
-<!-- ================================================== -->
+
+
+
+
+<!-- JavaScript to handle iframe loading of map/api_page.html.erb -->
+
 <script>
 document.addEventListener("DOMContentLoaded", function() {
   const btnMap = document.getElementById("btnShowMap");

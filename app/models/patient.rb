@@ -1,4 +1,11 @@
+# app/models/patient.rb
+
+# Patient model representing patients in the hospital
+# used to store patient information
+
 class Patient < ApplicationRecord
+
+  # profile picture attachment
   has_one_attached :profile_pic
 
   # Validations (remove living_status)

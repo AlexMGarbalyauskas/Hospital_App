@@ -1,11 +1,19 @@
+<!-- app/views/layouts/api_three_minimal.html.erb -->
+
+<!-- making sure the 
+api_three page in views does not have a 
+footer or navbar in view
+when iframing in show.html.erb page-->
+
+
 <!DOCTYPE html>
 <html>
+
 <head>
   <title><%= content_for?(:title) ? yield(:title) : "Hospital App" %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload", media: "all" %>
 
   <!-- Bootstrap CSS & JS -->
@@ -15,7 +23,13 @@
   <!-- Plotly.js -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
+
+
+
 <body style="margin:0; padding:20px;">
   <%= yield %>
 </body>
+
+
+
 </html>

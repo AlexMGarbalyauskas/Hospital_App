@@ -1,18 +1,37 @@
+<!-- patients/index.html.erb-->
+
+
+
+<!-- main index of the patients CRUD, after login 
+you go here to manage patients, after creation they appear
+as div cards to view -->
+
+
 <% content_for :title, "Patients" %>
 
 <div class="container mt-4">
+
+
   <!-- Page Header -->
   <div class="mb-4">
     <h1 class="display-5 fw-bold text-primary">Covid Patient Management</h1>
     <p class="lead text-muted">Search, view, and manage all registered patients in the system.</p>
   </div>
 
+
+
+
   <!-- Top Controls: New, Search, Delete -->
   <div class="d-flex flex-wrap align-items-center gap-3 w-100 mb-4"> <!-- mb-4 for spacing below -->
-    <!-- New Patient Button -->
+    
+    
+    
+    <!-- Create New Patient Button -->
     <%= link_to "New Patient", new_patient_path, class: "btn btn-success btn-sm px-4" %>
 
-    <!-- Search bar grows to fill available space -->
+
+
+    <!-- Search bar to fill available space -->
     <div class="flex-grow-1">
       <%= form_with url: patients_path, method: :get, local: true, class: "d-flex gap-2 align-items-center" do %>
         <%= text_field_tag :query, params[:query],
@@ -25,7 +44,9 @@
       <% end %>
     </div>
 
-    <!-- Delete Selected Button aligned to right -->
+
+
+    <!-- Delete Selected Button aligned to right screen -->
     <div class="ms-auto">
       <%= button_to "Delete Selected", delete_multiple_patients_path,
             method: :delete,
@@ -36,39 +57,63 @@
     </div>
   </div>
 
+
+
+
+
+<!-- patients cards frontend -->
   <!-- Patients Grid -->
   <div class="row g-4 mt-4"> <!-- mt-4 adds spacing from top controls -->
     <% @patients.each_slice(3) do |group| %>
       <div class="row mb-4">
         <% group.each do |patient| %>
+
+        <!-- change bg if dead or cured -->
           <% bg_class = case patient.treatment_status
             when "Dead" then "bg-black text-white"
             when "Cured" then "bg-success text-white"
             else "bg-dark text-white"
           end %>
 
+
           <div class="col-md-4">
             <%= turbo_frame_tag dom_id(patient) do %>
               <div class="card shadow rounded-4 p-0 h-100 position-relative">
+
+
+
 
                 <!-- Checkbox top-right -->
                 <div class="form-check position-absolute top-0 end-0 m-2">
                   <%= check_box_tag "patient_select", patient.id, false, class: "form-check-input patient-checkbox" %>
                 </div>
 
+
+
+
                 <div class="row g-0 h-100">
+
                   <!-- Left Side -->
                   <div class="col-5 <%= bg_class %> d-flex flex-column align-items-center justify-content-center p-3">
+                    
+
+                    <!-- change title if dead or cured -->
                     <h5 class="fw-bold text-center mb-1">
                       <%= patient.treatment_status == "Dead" ? "☠️ Deceased Patient" : (patient.treatment_status == "Cured" ? "✅ Cured Patient" : patient.name) %>
                     </h5>
 
+
+                    <!-- if profile pic is made than it
+                    showcases if not than deafult user.png appears instead-->
                     <% if patient.profile_pic.attached? %>
                       <%= image_tag patient.profile_pic, class: "img-thumbnail", style: "width: 100px; height: auto;" %>
                     <% else %>
                       <%= image_tag "user.png", class: "img-thumbnail", style: "width: 100px; height: auto;" %>
                     <% end %>
 
+
+
+                  <!-- btn to open show page, edit or delete -->
                     <div class="d-flex flex-column gap-2 mt-3 w-100">
                       <%= link_to "👁 Show", patient_path(patient), class: "btn btn-outline-light btn-sm w-100 text-start px-3" %>
                       <%= link_to "✏️ Edit", edit_patient_path(patient), class: "btn btn-outline-warning btn-sm w-100 text-start px-3" %>
@@ -80,14 +125,21 @@
                     </div>
                   </div>
 
+
+
+
                   <!-- Right Side: Patient Details -->
                   <div class="col-7 p-3">
+
+                    <!-- patient details displayed -->
                     <p class="mb-1"><strong>Name:</strong> <%= patient.name %></p>
                     <p class="mb-1"><strong>Age:</strong> <%= patient.age %> (<%= patient.age_group %>)</p>
                     <p class="mb-1"><strong>Gender:</strong> <%= patient.gender %></p>
                     <p class="mb-1"><strong>Vaccinated:</strong> <%= patient.vaccinated ? "Yes" : "No" %></p>
                     <p class="mb-1"><strong>Diagnosis:</strong> <%= patient.diagnosis %></p>
 
+
+                  <!-- critical status has nice colours -->
                     <% badge_class, icon = case patient.critical_status
                       when "Mild" then ["bg-warning text-dark", nil]
                       when "Critical" then ["bg-orange text-white", "⚠️"]
@@ -105,6 +157,10 @@
 
                     <p class="mb-1"><strong>Treatment Status:</strong> <%= patient.treatment_status %></p>
 
+
+                  <!-- treatment status changes
+                  FT of card of patient if dead than black if cured than green 
+                  normal is grey -->
                     <% if patient.treatment_status == "Dead" %>
                       <p class="mb-1"><strong>Date of Death:</strong> <%= patient.date_of_death %></p>
                       <p class="mb-1"><strong>Reason of Death:</strong> <%= patient.reason_of_death %></p>
@@ -126,7 +182,17 @@
   </div>
 </div>
 
-<!-- JS: Populate selected IDs for mass delete -->
+
+
+
+
+
+
+
+<!-- JS for mass delete after selection appear as 
+a red btn in right corner and the cards can be 
+selected in many to delete at once-->
+
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     const buttonForm = document.querySelector("#mass_delete_button_form");

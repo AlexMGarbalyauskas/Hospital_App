@@ -1,4 +1,12 @@
-<%# Beautiful, modern carousel with quotes at the bottom %>
+
+
+<%# Nice, modern carousel with quotes at the bottom displayed
+at the home index page fo gallert frontend 
+
+uses images from assets/images folder, bootstarp is needed
+for function linked in application.html.erb%>
+
+
 <div class="container py-5 mt-5">
 
   <div id="hospitalCarousel"
@@ -7,6 +15,8 @@
        data-bs-interval="4000">
 
     <div class="carousel-inner" style="height: 400px;">
+
+
 
       <!-- Slide 1 -->
       <div class="carousel-item active position-relative h-100 bg-dark">
@@ -23,6 +33,9 @@
         </div>
       </div>
 
+
+
+
       <!-- Slide 2 -->
       <div class="carousel-item position-relative h-100 bg-dark">
         <%= image_tag "photo2.jpg",
@@ -38,6 +51,9 @@
         </div>
       </div>
 
+
+
+
       <!-- Slide 3 -->
       <div class="carousel-item position-relative h-100 bg-dark">
         <%= image_tag "photo3.jpg",
@@ -52,6 +68,9 @@
           </div>
         </div>
       </div>
+
+
+
 
       <!-- Slide 4 -->
       <div class="carousel-item position-relative h-100 bg-dark">
@@ -70,6 +89,10 @@
 
     </div>
 
+
+
+
+
     <!-- Navigation Controls -->
     <button class="carousel-control-prev" type="button" data-bs-target="#hospitalCarousel" data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -79,6 +102,9 @@
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Next</span>
     </button>
+
+
+
 
     <!-- Carousel Indicators -->
     <div class="carousel-indicators mb-0">

@@ -1,3 +1,7 @@
+<!-- flash display for all changes 
+appears as blue circle box or red 
+style in assests stylesheets -->
+
 <% if flash[:notice] %>
   <% if flash[:notice].to_s.downcase.include?("deleted") || flash[:notice].to_s.downcase.include?("destroyed") || flash[:notice].to_s.downcase.include?("logged out") %>
     <div class="flash-circle bg-danger text-white">

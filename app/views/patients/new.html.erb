@@ -1,6 +1,21 @@
+<!-- views/patients/new.html.erb -->
+
+
+
+<!-- this file allows creation of new patients
+when the patients/index.html is open a btn links here to
+create new patients following Create policy of CRUD -->
+
+
+
+
+
 <div class="container d-flex justify-content-center mt-5">
   <div class="card shadow rounded-4 p-4" style="max-width: 600px; width: 100%;">
     <h2 class="text-primary fw-bold text-center mb-4">New Patient</h2>
+
+
+
 
     <%= form_with model: @patient, local: true, html: { multipart: true } do |form| %>
       <% if @patient.errors.any? %>
@@ -14,11 +29,20 @@
         </div>
       <% end %>
 
+
+
+
+
       <!-- Living Status -->
       <div class="mb-3">
         <%= form.label :living_status, "Living Status" %>
         <%= form.select :living_status, ["Normal", "Went Away Treated", "Died"], {}, class: "form-select" %>
       </div>
+
+
+
+
+
 
       <!-- Name -->
       <div class="mb-3">
@@ -26,17 +50,32 @@
         <%= form.text_field :name, class: "form-control" %>
       </div>
 
+
+
+
+
+
       <!-- Age -->
       <div class="mb-3">
         <%= form.label :age %>
         <%= form.number_field :age, class: "form-control" %>
       </div>
 
+
+
+
+
+
       <!-- Gender -->
       <div class="mb-3">
         <%= form.label :gender %>
         <%= form.select :gender, ["Male", "Female", "Other"], {}, class: "form-select" %>
       </div>
+
+
+
+
+
 
       <!-- Vaccinated -->
       <div class="mb-3">
@@ -46,11 +85,21 @@
         </div>
       </div>
 
+
+
+
+
+
       <!-- Diagnosis -->
       <div class="mb-3">
         <%= form.label :diagnosis %>
         <%= form.text_area :diagnosis, class: "form-control" %>
       </div>
+
+
+
+
+
 
       <!-- Critical Status -->
       <div class="mb-3">
@@ -58,11 +107,20 @@
         <%= form.select :critical_status, ["Mild", "Critical", "Highly Critical", "Immediate"], {}, class: "form-select" %>
       </div>
 
+
+
+
+
+
       <!-- Treatment Status -->
       <div class="mb-3">
         <%= form.label :treatment_status %>
         <%= form.select :treatment_status, ["Cured", "Not Treated", "Dead"], {}, class: "form-select", id: "treatment_status_select" %>
       </div>
+
+
+
+
 
       <!-- Cure Fields -->
       <div id="cure_fields" style="display: none;">
@@ -76,6 +134,11 @@
         </div>
       </div>
 
+
+
+
+
+
       <!-- Death Fields -->
       <div id="death_fields" style="display: none;">
         <div class="mb-3">
@@ -88,11 +151,22 @@
         </div>
       </div>
 
-      <!-- Profile Picture -->
+
+
+
+
+
+      <!-- Profile Picture saved in activeStorage 
+      and AWS in render deployment-->
       <div class="mb-3">
         <%= form.label :profile_pic %>
         <%= form.file_field :profile_pic, class: "form-control" %>
       </div>
+
+
+
+
+
 
       <!-- Buttons -->
       <div class="d-flex justify-content-between mt-4">
@@ -102,6 +176,11 @@
     <% end %>
   </div>
 </div>
+
+
+
+
+
 
 <!-- JavaScript for dynamic fields -->
 <script>
