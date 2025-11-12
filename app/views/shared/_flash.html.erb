@@ -1,0 +1,17 @@
+<% if flash[:notice] %>
+  <% if flash[:notice].to_s.downcase.include?("deleted") || flash[:notice].to_s.downcase.include?("destroyed") || flash[:notice].to_s.downcase.include?("logged out") %>
+    <div class="flash-circle bg-danger text-white">
+      <%= flash[:notice] %>
+    </div>
+  <% else %>
+    <div class="flash-circle bg-info text-white">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+<% end %>
+
+<% if flash[:alert] %>
+  <div class="flash-circle bg-danger text-white">
+    <%= flash[:alert] %>
+  </div>
+<% end %>
