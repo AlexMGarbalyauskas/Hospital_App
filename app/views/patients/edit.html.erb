@@ -10,6 +10,12 @@ of CRUD%>
 
 <%# uses bootstap for styling in classes tag included in
 application.html.erb in layouts folder, gem also %>
+
+
+<%# backend JS link from assets/javascripts%>
+<%= javascript_include_tag "edit_patient_form", defer: true %>
+
+
 <div class="container d-flex justify-content-center mt-5">
   <div class="card shadow rounded-4 p-4" style="max-width: 600px; width: 100%;">
     
@@ -172,33 +178,3 @@ application.html.erb in layouts folder, gem also %>
     <% end %>
   </div>
 </div>
-
-
-
-
-
-
-<!-- JavaScript to toggle Cure / Death fields -->
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const select = document.getElementById("treatment_status_select");
-  const cureFields = document.getElementById("cure_fields");
-  const deathFields = document.getElementById("death_fields");
-
-  function toggleFields() {
-    const value = select.value;
-    cureFields.style.display = (value === "Cured") ? "block" : "none";
-    deathFields.style.display = (value === "Dead") ? "block" : "none";
-  }
-
-
-
-  // Initialize fields on page load
-  toggleFields();
-
-
-
-  // Listen for changes
-  select.addEventListener("change", toggleFields);
-});
-</script>

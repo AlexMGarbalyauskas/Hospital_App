@@ -10,3 +10,6 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 // import Chartkick for creating charts
 import "chartkick/chart.js"
+
+
+import "./new_patient_form"

@@ -7,6 +7,7 @@ when the patients/index.html is open a btn links here to
 create new patients following Create policy of CRUD -->
 
 
+<%= javascript_include_tag "new_patient_form", defer: true %>
 
 
 
@@ -182,20 +183,4 @@ create new patients following Create policy of CRUD -->
 
 
 
-<!-- JavaScript for dynamic fields -->
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const select = document.getElementById("treatment_status_select");
-  const cureFields = document.getElementById("cure_fields");
-  const deathFields = document.getElementById("death_fields");
 
-  function toggleFields() {
-    const value = select.value;
-    cureFields.style.display = (value === "Cured") ? "block" : "none";
-    deathFields.style.display = (value === "Dead") ? "block" : "none";
-  }
-
-  select.addEventListener("change", toggleFields);
-  toggleFields();
-});
-</script>
