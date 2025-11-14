@@ -8,8 +8,8 @@ the latest global COVID-19 statistics.
 It uses data passed from 
 the controller (@covid_data) and visualizes it
 with a Plotly bar chart. 
-The data comes from the disease.sh API.-->
-
+The data comes from the disease.sh API.
+-->
 
 
 
@@ -28,79 +28,36 @@ The data comes from the disease.sh API.-->
 
 
 
-
 <!-- 2 -->
   <!-- Graph Section -->
   <h2 class="mt-5 text-primary fw-semibold">Worldwide COVID-19 Overview</h2>
 
 
-
-
   <!-- If no data is available, show a warning -->
   <% if @covid_data.blank? %>
     <p class="alert alert-warning text-center">No data available at the moment.</p>
- 
+
   <% else %>
 
-    <!-- Chart container -->
-    <div id="globalCovidGraph" style="width:100%; height:600px;"></div>
+    <!--
+      Chart container that stores dataset inside HTML5 data-* attributes.
+      This removes the need for ERB inside JavaScript.
+    -->
+    <div 
+      id="globalCovidGraph"
+      style="width:100%; height:600px;"
+      data-cases="<%= @covid_data['cases'] || 0 %>"
+      data-deaths="<%= @covid_data['deaths'] || 0 %>"
+      data-recovered="<%= @covid_data['recovered'] || 0 %>"
+      data-active="<%= @covid_data['active'] || 0 %>"
+      data-critical="<%= @covid_data['critical'] || 0 %>"
+      data-tests="<%= @covid_data['tests'] || 0 %>">
+    </div>
 
-
-
-
-
-
-
-
-<!-- 3 -->
-    <script>
-      // Wait until DOM is loaded before rendering chart
-      document.addEventListener("DOMContentLoaded", function() {
-        // Define data for the bar chart using instance variable values
-        const data = {
-          x: ['Cases', 'Deaths', 'Recovered', 'Active', 'Critical', 'Tests'],
-          y: [
-            <%= @covid_data['cases'] || 0 %>,
-            <%= @covid_data['deaths'] || 0 %>,
-            <%= @covid_data['recovered'] || 0 %>,
-            <%= @covid_data['active'] || 0 %>,
-            <%= @covid_data['critical'] || 0 %>,
-            <%= @covid_data['tests'] || 0 %>
-          ],
-          type: 'bar',
-          marker: { 
-            color: [
-              '#007bff', // Cases blue
-              '#dc3545', // Deaths red
-              '#28a745', // Recovered green
-              '#ffc107', // Active yellow
-              '#fd7e14', // Critical orange
-              '#6c757d'  // Tests gray
-            ] 
-          }
-        };
-
-
-
-
-        // Charting the layout configuration
-        const layout = {
-          title: 'Global COVID-19 Statistics',
-          yaxis: { title: 'Count' },
-          margin: { t: 50, l: 50, r: 50, b: 50 }
-        };
-
-
-
-        // Rendering the Plotly chart inside the div
-        Plotly.newPlot('globalCovidGraph', [data], layout);
-      });
-    </script>
-
-
+    <!-- External JS that handles Plotly chart rendering -->
+    <%= javascript_include_tag "global_covid_index", defer: true %>
 
   <% end %>
-
 
 
 
@@ -112,6 +69,4 @@ The data comes from the disease.sh API.-->
   </p>
 
 
-
-
-</div> 
+</div>

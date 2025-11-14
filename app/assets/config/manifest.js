@@ -10,5 +10,8 @@
 //= link edit_patient_form.js
 //= link index_patient_form.js 
 //= link show_patient_form.js 
+//= link api_page_index.js 
+//= link global_covid_index.js 
+//= link vaccine_map.js
 
 

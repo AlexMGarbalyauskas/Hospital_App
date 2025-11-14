@@ -11,15 +11,13 @@
   passed from the ApiPageController.
 -->
 
-
+<!-- Link external JS file for Plotly chart (no ERB in JS) -->
+<%= javascript_include_tag "api_page_index", defer: true %>
 
 
 <!-- 1 -->
 <!-- Page heading -->
 <h1 class="fw-bold display-5 text-primary mb-4">Global COVID-19 Historical Data</h1>
-
-
-
 
 
 <!-- 2 -->
@@ -30,53 +28,32 @@
 
 
 
+<!-- 
+  Extract arrays for JS:
+  This code works whether @daily_new_cases is:
+     - a Hash  => { "2020-01-01" => 100 }
+     - an Array => [["2020-01-01", 100], ...]
+-->
+<% dates = @daily_new_cases.map(&:first) %>
+<% cases = @daily_new_cases.map(&:last) %>
+
+
+
 
 
 
 <!-- 3 -->
 <!-- Card container for the chart -->
 <div class="card shadow rounded-4 p-4">
+
   <!-- Placeholder div where Plotly will render the chart -->
-  <div id="covid_plot" style="height: 500px;"></div>
+  <!-- We store data in HTML5 data-* attributes for external JS -->
+  <div 
+    id="covid_plot"
+    data-dates="<%= dates.join(',') %>"
+    data-cases="<%= cases.join(',') %>"
+    style="height: 500px;">
+  </div>
+
 </div>
 
-
-
-
-
-
-
-<!-- 4 -->
-<!-- Plotly chart rendering script -->
-<script>
-  // Wait until the DOM is fully loaded before running chart code
-  document.addEventListener("DOMContentLoaded", function () {
-    // Extract dates from @daily_new_cases (keys of the hash)
-    const dates = [<%= raw @daily_new_cases.map { |d, _| "\"#{d}\"" }.join(", ") %>];
-    
-    // Extract case counts from @daily_new_cases (values of the hash)
-    const cases = [<%= raw @daily_new_cases.map { |_, c| c }.join(", ") %>];
-
-    // Define the Plotly trace (line + markers chart)
-    const trace = {
-      x: dates,
-      y: cases,
-      type: 'scatter',
-      mode: 'lines+markers',
-      name: 'New Cases',
-      line: { color: 'rgba(0, 123, 255, 1)', width: 2 },
-      marker: { color: 'rgba(0, 123, 255, 0.8)' }
-    };
-
-    // Configure chart layout (titles, margins, axis labels)
-    const layout = {
-      title: 'Global COVID-19 Daily New Cases',
-      xaxis: { title: 'Date' },
-      yaxis: { title: 'New Cases' },
-      margin: { l: 60, r: 30, t: 60, b: 80 }
-    };
-
-    // Render the chart into the covid_plot div
-    Plotly.newPlot('covid_plot', [trace], layout);
-  });
-</script>
