@@ -82,7 +82,4 @@ This project was developed as part of the **Cloud Computing module** for the BSc
 - Image carousel  
 - Patient cards change color based on treatment status  
 
----
-
-## 📂 Project Structure  
 
