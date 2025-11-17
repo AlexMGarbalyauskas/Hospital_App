@@ -1,26 +1,29 @@
 name: CI
 
-on:
-  pull_request:
-  push:
-    branches: [ main ]
+on: [push, pull_request]
 
 jobs:
-  scan_ruby:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: .ruby-version
+          ruby-version: 3.2
           bundler-cache: true
 
-      - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager
+      - name: Create storage folder
+        run: mkdir -p storage
 
- 
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
 
+      - name: Set up database
+        run: |
+          bin/rails db:migrate RAILS_ENV=test
+
+      - name: Run tests
+        run: bundle exec rspec --no-warnings
