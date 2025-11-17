@@ -26,4 +26,6 @@ jobs:
           bin/rails db:migrate RAILS_ENV=test
 
       - name: Run tests
-        run: bundle exec rspec --no-warnings
+        run: |
+          export RUBYOPT=-W0
+          bundle exec rspec
