@@ -18,6 +18,13 @@ class ApplicationController < ActionController::Base
 
   #includes Pundit library for authorization handling 
   include Pundit
+ 
+  #required to login 
+  def require_login
+    unless session[:user_id]
+      redirect_to login_path, alert: "You must be logged in to access this section."
+    end
+  end
 
 
   #rescue from Pundit global auth error 
