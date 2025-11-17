@@ -25,7 +25,6 @@ window.initVaccineMap = async function () {
     }
   } catch (e) {}
 
-
   // ---- Parse vaccine data from dataset ----
   let raw = mapEl.dataset.vaccineData || "{}";
   let vaccineData = {};
@@ -66,28 +65,35 @@ window.initVaccineMap = async function () {
     console.warn("Failed loading centroids", e);
   }
 
-
+  // ----- Normalize country names -----
+  // This ensures consistent lookups for colorMap, radiusMap, CENTROIDS
   function normalizeName(n) {
     if (!n) return n;
-    return n.replace(/\s*\(.*?\)\s*/g, "").replace(/&/g, "and").trim();
+    n = n.replace(/\s*\(.*?\)\s*/g, "") // remove parenthetical info
+         .replace(/&/g, "and")          // replace & with "and"
+         .trim();
+
+    // Custom normalization for known mismatches
+    if (n === "USA") return "United States";
+    if (n === "UK") return "United Kingdom";
+    if (n === "S. Korea") return "South Korea";
+
+    return n;
   }
 
   // Get global max for ratio scaling
-  const maxValue =
-    Math.max(...entries.map(e => e.value || 0), 1);
-
+  const maxValue = Math.max(...entries.map(e => e.value || 0), 1);
   const infowindow = new google.maps.InfoWindow();
 
-
-  // Predefined custom colors
+  // ----- Predefined custom colors -----
   const colorMap = {
     "Russia": "blue",
     "Canada": "red",
     "Mexico": "green",
-    "USA": "navy",
+    "United States": "navy",
     "Ireland": "green",
     "India": "orange",
-    "UK": "red",
+    "United Kingdom": "red",
     "Brazil": "purple",
     "Australia": "orange",
     "Japan": "yellow",
@@ -101,14 +107,14 @@ window.initVaccineMap = async function () {
     "Algeria": "green"
   };
 
-  // Predefined radii
+  // ----- Predefined radii -----
   const radiusMap = {
     "Russia": 1000000,
     "Canada": 900000,
     "Mexico": 498000,
-    "USA": 950000,
+    "United States": 950000,
     "Ireland": 80000,
-    "UK": 70000,
+    "United Kingdom": 70000,
     "Brazil": 900000,
     "Australia": 850000,
     "Japan": 720000,
@@ -123,27 +129,27 @@ window.initVaccineMap = async function () {
     "Algeria": 350000
   };
 
-
   // ----- Draw circles -----
   entries.forEach(e => {
-    let coord =
-      CENTROIDS[e.country] ||
-      CENTROIDS[normalizeName(e.country)] ||
-      null;
+    const countryKey = normalizeName(e.country);
 
-    if (!coord) return;
+    // Get coordinates
+    const coord = CENTROIDS[countryKey] || null;
+    if (!coord) return; // skip if coordinates missing
 
-    let ratio = (e.value || 0) / maxValue;
+    // Compute value ratio
+    const ratio = (e.value || 0) / maxValue;
 
-    let circleColor =
-      colorMap[e.country] ||
+    // Determine circle color
+    const circleColor = colorMap[countryKey] ||
       (ratio > 0.66 ? "#1a9850" : ratio > 0.33 ? "#fee08b" : "#d73027");
 
-    let radius =
-      radiusMap[e.country] ||
+    // Determine circle radius
+    const radius = radiusMap[countryKey] ||
       Math.max(40000, Math.sqrt((e.value || 0) / maxValue) * 800000);
 
-    let circle = new google.maps.Circle({
+    // Draw circle
+    const circle = new google.maps.Circle({
       strokeColor: circleColor,
       strokeOpacity: 0.8,
       strokeWeight: 2,
@@ -154,6 +160,7 @@ window.initVaccineMap = async function () {
       radius
     });
 
+    // Show info window on click
     circle.addListener("click", () => {
       infowindow.setContent(
         `<strong>${e.country}</strong><br>${(e.value || 0).toLocaleString()} total`
@@ -163,7 +170,6 @@ window.initVaccineMap = async function () {
     });
   });
 };
-
 
 // Re-init on Turbo navigation
 document.addEventListener("turbo:load", () => {
