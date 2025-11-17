@@ -4,6 +4,9 @@
 #sets up global behavior for all 
 #controllers in Rails app
 class ApplicationController < ActionController::Base
+  
+  #make user login first
+  before_action :require_login
 
 
   #runs before every request. It looks at the session[:user_id] 
