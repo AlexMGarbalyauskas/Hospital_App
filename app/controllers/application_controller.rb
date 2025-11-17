@@ -1,35 +1,40 @@
 # app/controllers/application_controller.rb
 
-
-#sets up global behavior for all 
-#controllers in Rails app
 class ApplicationController < ActionController::Base
-  
-  #make user login first
+  include Pundit::Authorization
+
+  before_action :set_current_user
   before_action :require_login
 
+  private
 
-  #runs before every request. It looks at the session[:user_id] 
-  #and, if present, finds the corresponding User record. 
-  #That user is stored in a thread‑safe Current 
-  #object so it can be accessed anywhere in the request cycle
-  before_action :set_current_user
-
-
-  #includes Pundit library for authorization handling 
-  include Pundit
- 
-  #required to login 
+  # Require login for all routes except defined public ones
   def require_login
+    return if public_route?
+
     unless session[:user_id]
       redirect_to login_path, alert: "You must be logged in to access this section."
     end
   end
 
+  # Public routes identified by controller + action, not path helpers
+  def public_route?
+    # Adjust this list to match your app
+    public_routes = [
+      { controller: "sessions", action: "new" },     # login page
+      { controller: "sessions", action: "create" },  # login submit
+      { controller: "users", action: "new" },        # signup page (if exists)
+      { controller: "users", action: "create" },     # signup submit
+      { controller: "home", action: "index" }        # allow homepage without login
+    ]
 
-  #rescue from Pundit global auth error 
+    public_routes.any? do |route|
+      route[:controller] == params[:controller] &&
+      route[:action] == params[:action]
+    end
+  end
+
   def set_current_user
     Current.user = User.find_by(id: session[:user_id]) if session[:user_id]
   end
-
 end
