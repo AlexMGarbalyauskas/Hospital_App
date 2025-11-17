@@ -1,4 +1,3 @@
-# spec/controllers/patients_controller_spec.rb
 require 'rails_helper'
 
 RSpec.describe PatientsController, type: :controller do
@@ -16,10 +15,16 @@ RSpec.describe PatientsController, type: :controller do
     { name: "", age: nil, diagnosis: "", critical_status: "", treatment_status: "" }
   end
 
+  before do
+    # Create a user and simulate login
+    @user = User.create!(name: "Test User", email: "test@example.com", password: "password")
+    session[:user_id] = @user.id
+  end
+
   describe "GET #index" do
     it "returns a successful response" do
       get :index
-      expect(response).to be_successful
+      expect(response).to be_successful # now should pass
     end
   end
 
