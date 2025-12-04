@@ -68,6 +68,6 @@ gem "dartsass-rails", "~> 0.5.1"
 
 gem "image_processing", "~> 1.14"
 
-gem "dotenv-rails", "~> 3.1"
+gem "dotenv-rails", "~> 3.2"
 
 gem "rspec-rails", "~> 8.0", groups: [:development, :test]
